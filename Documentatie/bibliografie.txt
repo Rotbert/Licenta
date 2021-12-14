@@ -1,3 +1,5 @@
+PART 1:
+
 WhatsApp:
 
 https://en.wikipedia.org/wiki/WhatsApp
@@ -16,6 +18,10 @@ https://en.wikipedia.org/wiki/Telegram_(software)
 https://www.sketchappsources.com/free-source/2824-telegram-ios-ui-kit-sketch-freebie-resource.html
 https://www.freelancinggig.com/blog/2018/08/02/what-programming-language-is-telegram-written-in/
 
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+PART 2:
+
 Client/Server:
 
 https://cio-wiki.org/wiki/Client_Server_Architecture
@@ -23,3 +29,46 @@ https://cio-wiki.org/wiki/Client_Server_Architecture
 SPA vs SSR:
 
 https://graphcms.com/blog/difference-spa-ssg-ssr
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+PART  3:
+
+JavaScript:
+
+https://en.wikipedia.org/wiki/JavaScript
+
+React (JavaScript library)
+
+https://en.wikipedia.org/wiki/React_(JavaScript_library)
+
+React Native
+
+https://en.wikipedia.org/wiki/React_Native
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
