@@ -4,6 +4,7 @@ import { useRoute } from "@react-navigation/core";
 import ChatMessage from "../components/ChatMessage";
 import InputBox from "../components/InputBox.js";
 import db from "../firebase";
+import { auth } from "../firebase";
 
 const ChatRoomScreen = () => {
   const image = {
@@ -16,7 +17,9 @@ const ChatRoomScreen = () => {
 
   useEffect(() => {
     if (chatId) {
-      db.collection("Chats")
+      db.collection("users")
+        .doc(auth.currentUser.uid)
+        .collection("chats")
         .doc(chatId)
         .collection("messages")
         .orderBy("timestamp", "asc")

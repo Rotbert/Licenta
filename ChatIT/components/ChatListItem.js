@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/core";
 import { Ionicons } from "@expo/vector-icons";
 import db from "../firebase";
 import moment from "moment";
+import { auth } from "../firebase";
 
 const ChatListItem = ({ id, email }) => {
   const [messages, setMessages] = useState([]);
@@ -12,7 +13,9 @@ const ChatListItem = ({ id, email }) => {
 
   useEffect(() => {
     if (id) {
-      db.collection("Chats")
+      db.collection("users")
+        .doc(auth.currentUser.uid)
+        .collection("chats")
         .doc(id)
         .collection("messages")
         .orderBy("timestamp", "desc")
