@@ -18,11 +18,16 @@ const InputBox = ({ chatId }) => {
   };
 
   const onSendPress = () => {
-    db.collection("Chats").doc(chatId).collection("messages").add({
-      message: message,
-      email: auth.currentUser.email,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
+    db.collection("users")
+      .doc(auth.currentUser.uid)
+      .collection("chats")
+      .doc(chatId)
+      .collection("messages")
+      .add({
+        message: message,
+        email: auth.currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
 
     setMessage("");
   };
