@@ -14,7 +14,7 @@ const ChatMessage = ({ message }) => {
         style={[
           styles.messageBox,
           {
-            backgroundColor: isMyMessage() ? "#DCF8C5" : "white",
+            backgroundColor: isMyMessage() ? "#71C1FF" : "white",
             marginLeft: isMyMessage() ? 50 : 0,
             marginRight: isMyMessage() ? 0 : 50,
           },
