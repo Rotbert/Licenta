@@ -32,8 +32,8 @@ const LoginScreen = () => {
   const handleSignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((credentials) => {
-        return db.collection("users").doc(credentials.user.uid).set({
-          email: credentials.user.email,
+        return db.collection("users").doc(credentials.user.email).set({
+          uid: credentials.user.uid,
         });
       })
       .catch((error) => alert(error.message));
