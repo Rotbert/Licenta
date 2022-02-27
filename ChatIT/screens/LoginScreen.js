@@ -37,13 +37,20 @@ const LoginScreen = () => {
         });
       })
       .catch((error) => alert(error.message));
+      clearInputs();
   };
 
   const handleSignIn = () => {
     signInWithEmailAndPassword(auth, email, password).catch((error) =>
       alert(error.message)
     );
+    clearInputs();
   };
+
+  const clearInputs = () => {
+    setEmail("");
+    setPassword("");
+  }
 
   return (
     <View style={styles.container} behavior="padding">
