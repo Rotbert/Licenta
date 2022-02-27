@@ -28,6 +28,16 @@ const InputBox = ({ chatId }) => {
         email: auth.currentUser.email,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       });
+    db.collection("users")
+      .doc(chatId)
+      .collection("chats")
+      .doc(auth.currentUser.email)
+      .collection("messages")
+      .add({
+        message: message,
+        email: auth.currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
 
     setMessage("");
   };
