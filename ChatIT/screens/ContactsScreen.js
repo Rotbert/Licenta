@@ -8,10 +8,10 @@ const ContactsScreen = () => {
 
   useEffect(() => {
     const unsubscribe = db.collection("users").onSnapshot((snapshot) =>
-      setContacts(
+        setContacts(
         snapshot.docs
           .filter((doc) => {
-            if (doc.data().email !== auth.currentUser.email) {
+            if (doc.id !== auth.currentUser.email) {
               return true;
             }
             return false;
@@ -34,7 +34,7 @@ const ContactsScreen = () => {
         <ContactiListItem
           key={contact.id}
           id={contact.id}
-          email={contact.data.email}
+          email={contact.id}
         />
       ))}
     </View>
