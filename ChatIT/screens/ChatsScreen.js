@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import ChatListItem from "../components/ChatListItem";
 import NewMessageButton from "../components/NewMessageButton";
+import NoChatsAvailable from "../components/NoChatsAvailable";
 import db from "../firebase";
 import { auth } from "../firebase";
 
@@ -27,11 +28,21 @@ const ChatsScreen = () => {
     };
   }, []);
 
+  const isEmpty = () => {
+    if(chats.length === 0)
+      return true;
+    return false;
+  };
+
   return (
     <View style={styles.container}>
-      {chats != undefined ? chats.map((chat) => (
-        <ChatListItem key={chat.id} id={chat.id} email={chat.data.email} />
-      )) : console.log(chats)}
+      {isEmpty() ? (
+        <NoChatsAvailable />
+      ) : (
+        chats.map((chat) => (
+          <ChatListItem key={chat.id} id={chat.id} email={chat.data.email} />
+        ))
+      )}
       <NewMessageButton />
     </View>
   );
