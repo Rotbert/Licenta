@@ -9,25 +9,42 @@ import {
 import { useNavigation } from "@react-navigation/core";
 import { Ionicons } from "@expo/vector-icons";
 import db from "../firebase";
+import { auth } from "../firebase";
 
 const ContactiListItem = ({ id, email }) => {
   const navigation = useNavigation();
   const [chats, setChats] = useState([]);
 
-  useEffect(() => {
-    const unsubscribe = db.collection("Chats").onSnapshot((snapshot) => {
-      setChats(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      );
-    });
+  // useEffect(() => {
+  //   const unsubscribe = db
+  //     .collection("users")
+  //     .doc(auth.currentUser.email)
+  //     .collection("chats")
+  //     .onSnapshot((snapshot) => {
+  //       setChats(
+  //         snapshot.docs.map((doc) => ({
+  //           id: doc.id,
+  //           data: doc.data(),
+  //         }))
+  //       );
+  //     });
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  //   db.collection("users")
+  //     .doc(email)
+  //     .collection("chats")
+  //     .onSnapshot((snapshot) => {
+  //       setChats(
+  //         snapshot.docs.map((doc) => ({
+  //           id: doc.id,
+  //           data: doc.data(),
+  //         }))
+  //       );
+  //     });
+
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
 
   const onClick = () => {
     Alert.alert("New Chat", `Do you want to start a new chat with ${email}?`, [
@@ -38,9 +55,20 @@ const ContactiListItem = ({ id, email }) => {
       {
         text: "OK",
         onPress: () => {
-          db.collection("Chats").doc(`${email}`).set({
-            email: email,
-          });
+          db.collection("users")
+            .doc(auth.currentUser.email)
+            .collection("chats")
+            .doc(`${email}`)
+            .set({
+              creationDate: new Date(),
+            });
+          db.collection("users")
+            .doc(`${email}`)
+            .collection("chats")
+            .doc(auth.currentUser.email)
+            .set({
+              creationDate: new Date(),
+            });
           navigation.navigate("ChatRoom", {
             id: email,
             email: email,

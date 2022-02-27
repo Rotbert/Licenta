@@ -12,7 +12,7 @@ const ChatsScreen = () => {
   useEffect(() => {
     const unsubscribe = db
       .collection("users")
-      .doc(auth.currentUser.uid)
+      .doc(auth.currentUser.email)
       .collection("chats")
       .onSnapshot((snapshot) =>
         setChats(
@@ -40,7 +40,7 @@ const ChatsScreen = () => {
         <NoChatsAvailable />
       ) : (
         chats.map((chat) => (
-          <ChatListItem key={chat.id} id={chat.id} email={chat.data.email} />
+          <ChatListItem key={chat.id} id={chat.id} email={chat.id} />
         ))
       )}
       <NewMessageButton />
