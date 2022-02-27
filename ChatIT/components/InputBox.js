@@ -19,7 +19,7 @@ const InputBox = ({ chatId }) => {
 
   const onSendPress = () => {
     db.collection("users")
-      .doc(auth.currentUser.uid)
+      .doc(auth.currentUser.email)
       .collection("chats")
       .doc(chatId)
       .collection("messages")

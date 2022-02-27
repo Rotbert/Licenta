@@ -14,7 +14,7 @@ const ChatListItem = ({ id, email }) => {
   useEffect(() => {
     if (id) {
       db.collection("users")
-        .doc(auth.currentUser.uid)
+        .doc(auth.currentUser.email)
         .collection("chats")
         .doc(id)
         .collection("messages")
