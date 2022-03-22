@@ -6,11 +6,14 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
+import { TextInput, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
 import db, { auth } from "../firebase";
 import firebase from "firebase/compat/app";
+import Filter from "bad-words";
 
 const InputBox = ({ chatId }) => {
+  const filter = new Filter();
+
   const [message, setMessage] = useState("");
 
   const onMicrophonePress = () => {
@@ -18,28 +21,45 @@ const InputBox = ({ chatId }) => {
   };
 
   const onSendPress = () => {
-    db.collection("users")
-      .doc(auth.currentUser.email)
-      .collection("chats")
-      .doc(chatId)
-      .collection("messages")
-      .add({
-        message: message,
-        email: auth.currentUser.email,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      });
-    db.collection("users")
-      .doc(chatId)
-      .collection("chats")
-      .doc(auth.currentUser.email)
-      .collection("messages")
-      .add({
-        message: message,
-        email: auth.currentUser.email,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      });
+    if (filter.isProfane(message)) {
+      Alert.alert(
+        "Profanity Alert!",
+        "This message contains profanity. Are you sure you want to send it?",
+        [
+          {
+            text: "No",
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: () => {
+              db.collection("users")
+                .doc(auth.currentUser.email)
+                .collection("chats")
+                .doc(chatId)
+                .collection("messages")
+                .add({
+                  message: message,
+                  email: auth.currentUser.email,
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+              db.collection("users")
+                .doc(chatId)
+                .collection("chats")
+                .doc(auth.currentUser.email)
+                .collection("messages")
+                .add({
+                  message: message,
+                  email: auth.currentUser.email,
+                  timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                });
 
-    setMessage("");
+              setMessage("");
+            },
+          },
+        ]
+      );
+    }
   };
 
   const onPress = () => {

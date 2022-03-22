@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { StyleSheet, ScrollView, View, ImageBackground } from "react-native";
+import { StyleSheet, ScrollView, ImageBackground } from "react-native";
 import { useRoute } from "@react-navigation/core";
 import ChatMessage from "../components/ChatMessage";
 import InputBox from "../components/InputBox.js";
