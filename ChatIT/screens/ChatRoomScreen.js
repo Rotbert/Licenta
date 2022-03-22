@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, ImageBackground } from "react-native";
+import React, { useEffect, useState, useRef } from "react";
+import { StyleSheet, ScrollView, View, ImageBackground } from "react-native";
 import { useRoute } from "@react-navigation/core";
 import ChatMessage from "../components/ChatMessage";
 import InputBox from "../components/InputBox.js";
@@ -7,6 +7,8 @@ import db from "../firebase";
 import { auth } from "../firebase";
 
 const ChatRoomScreen = () => {
+  const scrollViewRef = useRef();
+
   const image = {
     uri: "https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png",
   };
@@ -34,9 +36,16 @@ const ChatRoomScreen = () => {
       style={[{ width: "100%", height: "100%" }, styles.container]}
       source={image}
     >
-      {messages.map((message) => (
-        <ChatMessage key={Math.random()} message={message} />
-      ))}
+      <ScrollView
+        ref={scrollViewRef}
+        onContentSizeChange={() =>
+          scrollViewRef.current.scrollToEnd({ animated: true })
+        }
+      >
+        {messages.map((message) => (
+          <ChatMessage key={Math.random()} message={message} />
+        ))}
+      </ScrollView>
       <InputBox chatId={chatId} />
     </ImageBackground>
   );
