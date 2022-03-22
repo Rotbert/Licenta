@@ -71,6 +71,8 @@ const styles = StyleSheet.create({
     width: "100%",
     justifyContent: "space-between",
     padding: 10,
+    borderBottomColor: "#d3d3d3",
+    borderBottomWidth: 0.5,
   },
   leftContainer: {
     flexDirection: "row",
