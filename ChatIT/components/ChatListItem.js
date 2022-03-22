@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import db from "../firebase";
 import moment from "moment";
 import { auth } from "../firebase";
+import ChatFilter from "./ChatFilter";
 
 const ChatListItem = ({ id, email }) => {
   const [messages, setMessages] = useState([]);
@@ -42,7 +43,7 @@ const ChatListItem = ({ id, email }) => {
 
           <View style={styles.midContainer}>
             <Text style={styles.username}>{email}</Text>
-            <Text style={styles.lastMessage}>{messages[0]?.message}</Text>
+            <Text style={styles.lastMessage}>{ChatFilter(messages[0]?.message)}</Text>
           </View>
         </View>
         <Text style={styles.time}>

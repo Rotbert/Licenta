@@ -2,6 +2,7 @@ import moment from "moment";
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { auth } from "../firebase";
+import ChatFilter from "./ChatFilter";
 
 const ChatMessage = ({ message }) => {
   const isMyMessage = () => {
@@ -21,7 +22,7 @@ const ChatMessage = ({ message }) => {
         ]}
       >
         {!isMyMessage() && <Text style={styles.name}>{message.email}</Text>}
-        <Text style={styles.message}>{message.message}</Text>
+        <Text style={styles.message}>{ChatFilter(message.message)}</Text>
         <Text style={styles.time}>
           {moment(message?.timestamp?.toDate()).fromNow()}
         </Text>
