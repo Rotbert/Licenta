@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Text,
   View,
@@ -13,38 +13,6 @@ import { auth } from "../firebase";
 
 const ContactiListItem = ({ id, email }) => {
   const navigation = useNavigation();
-  const [chats, setChats] = useState([]);
-
-  // useEffect(() => {
-  //   const unsubscribe = db
-  //     .collection("users")
-  //     .doc(auth.currentUser.email)
-  //     .collection("chats")
-  //     .onSnapshot((snapshot) => {
-  //       setChats(
-  //         snapshot.docs.map((doc) => ({
-  //           id: doc.id,
-  //           data: doc.data(),
-  //         }))
-  //       );
-  //     });
-
-  //   db.collection("users")
-  //     .doc(email)
-  //     .collection("chats")
-  //     .onSnapshot((snapshot) => {
-  //       setChats(
-  //         snapshot.docs.map((doc) => ({
-  //           id: doc.id,
-  //           data: doc.data(),
-  //         }))
-  //       );
-  //     });
-
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
 
   const onClick = () => {
     Alert.alert("New Chat", `Do you want to start a new chat with ${email}?`, [
