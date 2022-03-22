@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet } from "react-native";
 import ChatListItem from "../components/ChatListItem";
 import NewMessageButton from "../components/NewMessageButton";
 import NoChatsAvailable from "../components/NoChatsAvailable";
@@ -29,20 +29,21 @@ const ChatsScreen = () => {
   }, []);
 
   const isEmpty = () => {
-    if(chats.length === 0)
-      return true;
+    if (chats.length === 0) return true;
     return false;
   };
 
   return (
     <View style={styles.container}>
-      {isEmpty() ? (
-        <NoChatsAvailable />
-      ) : (
-        chats.map((chat) => (
-          <ChatListItem key={chat.id} id={chat.id} email={chat.id} />
-        ))
-      )}
+      <ScrollView>
+        {isEmpty() ? (
+          <NoChatsAvailable />
+        ) : (
+          chats.map((chat) => (
+            <ChatListItem key={chat.id} id={chat.id} email={chat.id} />
+          ))
+        )}
+      </ScrollView>
       <NewMessageButton />
     </View>
   );

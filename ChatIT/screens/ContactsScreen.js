@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import ContactiListItem from "../components/ContactListItem";
 import db, { auth } from "../firebase";
 
@@ -29,7 +29,7 @@ const ContactsScreen = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {contacts.map((contact) => (
         <ContactiListItem
           key={contact.id}
@@ -37,7 +37,7 @@ const ContactsScreen = () => {
           email={contact.id}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
