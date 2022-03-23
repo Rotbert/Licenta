@@ -6,7 +6,13 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { TextInput, TouchableOpacity, View, StyleSheet, Alert } from "react-native";
+import {
+  TextInput,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import db, { auth } from "../firebase";
 import firebase from "firebase/compat/app";
 import Filter from "bad-words";
@@ -20,7 +26,7 @@ const InputBox = ({ chatId }) => {
     console.warn("Microphone");
   };
 
-  const onSendPress = () => {
+  const checkProfanity = () => {
     if (filter.isProfane(message)) {
       Alert.alert(
         "Profanity Alert!",
@@ -33,40 +39,46 @@ const InputBox = ({ chatId }) => {
           {
             text: "Yes",
             onPress: () => {
-              db.collection("users")
-                .doc(auth.currentUser.email)
-                .collection("chats")
-                .doc(chatId)
-                .collection("messages")
-                .add({
-                  message: message,
-                  email: auth.currentUser.email,
-                  timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                });
-              db.collection("users")
-                .doc(chatId)
-                .collection("chats")
-                .doc(auth.currentUser.email)
-                .collection("messages")
-                .add({
-                  message: message,
-                  email: auth.currentUser.email,
-                  timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                });
-
-              setMessage("");
+              sendMessage();
             },
           },
         ]
       );
+    } else {
+      sendMessage();
     }
+  };
+
+  const sendMessage = () => {
+    db.collection("users")
+      .doc(auth.currentUser.email)
+      .collection("chats")
+      .doc(chatId)
+      .collection("messages")
+      .add({
+        message: message,
+        email: auth.currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    db.collection("users")
+      .doc(chatId)
+      .collection("chats")
+      .doc(auth.currentUser.email)
+      .collection("messages")
+      .add({
+        message: message,
+        email: auth.currentUser.email,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+
+    setMessage("");
   };
 
   const onPress = () => {
     if (!message) {
       onMicrophonePress();
     } else {
-      onSendPress();
+      checkProfanity();
     }
   };
 
