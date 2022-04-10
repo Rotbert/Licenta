@@ -35,8 +35,8 @@ export default function MainTabNavigator() {
         }}
       />
       <MainTab.Screen name="Chats" component={ChatsScreen} />
-      <MainTab.Screen name="Status" component={ChatRoomScreen} />
-      <MainTab.Screen name="Calls" component={ChatRoomScreen} />
+      {/* <MainTab.Screen name="Status" component={ChatRoomScreen} />
+      <MainTab.Screen name="Calls" component={ChatRoomScreen} /> */}
     </MainTab.Navigator>
   );
 }
