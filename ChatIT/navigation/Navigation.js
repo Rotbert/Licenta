@@ -11,7 +11,7 @@ import ChatRoomScreen from "../screens/ChatRoomScreen";
 import ContactsScreen from "../screens/ContactsScreen";
 import {
   Octicons,
-  MaterialCommunityIcons,
+  Feather,
   MaterialIcons,
   FontAwesome5,
   SimpleLineIcons,
@@ -22,6 +22,7 @@ import { useNavigation } from "@react-navigation/core";
 import LinkingConfiguration from "./LinkingConfiguration";
 import MainTabNavigator from "./MainTabNavigation";
 import RegisterScreen from "../screens/RegisterScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 const Navigation = ({ colorScheme }) => {
   return (
@@ -54,6 +55,10 @@ function RootNavigator() {
     navigation.navigate("Root");
   };
 
+  const handleSettings = () => {
+    navigation.navigate("Settings");
+  }
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -79,6 +84,10 @@ function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+      />
+      <Stack.Screen
         name="Root"
         component={MainTabNavigator}
         options={{
@@ -93,11 +102,9 @@ function RootNavigator() {
               }}
             >
               <Octicons name="search" size={22} color="white" />
-              <MaterialCommunityIcons
-                name="dots-vertical"
-                size={22}
-                color="white"
-              />
+              <TouchableOpacity onPress={handleSettings}>
+                <Feather name="settings" size={22} color="white" />
+              </TouchableOpacity>
             </View>
           ),
           headerLeft: () => (
@@ -131,11 +138,7 @@ function RootNavigator() {
             >
               <FontAwesome5 name="video" size={22} color={"white"} />
               <MaterialIcons name="call" size={22} color={"white"} />
-              <MaterialCommunityIcons
-                name="dots-vertical"
-                size={22}
-                color={"white"}
-              />
+              <Feather name="settings" size={22} color={"white"} />
             </View>
           ),
           headerLeft: () => (
