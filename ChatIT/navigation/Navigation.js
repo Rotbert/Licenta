@@ -21,6 +21,7 @@ import { auth } from "../firebase";
 import { useNavigation } from "@react-navigation/core";
 import LinkingConfiguration from "./LinkingConfiguration";
 import MainTabNavigator from "./MainTabNavigation";
+import RegisterScreen from "../screens/RegisterScreen";
 
 const Navigation = ({ colorScheme }) => {
   return (
@@ -70,6 +71,11 @@ function RootNavigator() {
       <Stack.Screen
         name="Login"
         component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

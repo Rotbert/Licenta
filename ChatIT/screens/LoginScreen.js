@@ -6,9 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import db, { auth } from "../firebase";
+import { auth } from "../firebase";
 import {
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/core";
@@ -32,14 +31,7 @@ const LoginScreen = () => {
   }, []);
 
   const handleSignUp = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((credentials) => {
-        return db.collection("users").doc(credentials.user.email).set({
-          uid: credentials.user.uid,
-        });
-      })
-      .catch((error) => alert(error.message));
-    clearInputs();
+    navigation.navigate("Register");
   };
 
   const handleSignIn = () => {
