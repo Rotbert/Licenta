@@ -14,7 +14,8 @@ const ChatListItem = ({ id, email }) => {
 
   useEffect(() => {
     if (id) {
-      db.collection("users")
+      const unsubscribe = db
+        .collection("users")
         .doc(auth.currentUser.email)
         .collection("chats")
         .doc(id)
@@ -23,6 +24,10 @@ const ChatListItem = ({ id, email }) => {
         .onSnapshot((snapshot) => {
           setMessages(snapshot.docs.map((doc) => doc.data()));
         });
+
+      return () => {
+        unsubscribe();
+      };
     }
   }, [id]);
 
@@ -43,7 +48,9 @@ const ChatListItem = ({ id, email }) => {
 
           <View style={styles.midContainer}>
             <Text style={styles.username}>{email}</Text>
-            <Text style={styles.lastMessage}>{ChatFilter(messages[0]?.message)}</Text>
+            <Text style={styles.lastMessage}>
+              {ChatFilter(messages[0]?.message)}
+            </Text>
           </View>
         </View>
         <Text style={styles.time}>

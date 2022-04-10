@@ -26,7 +26,9 @@ const LoginScreen = () => {
       }
     });
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const handleSignUp = () => {
@@ -37,7 +39,7 @@ const LoginScreen = () => {
         });
       })
       .catch((error) => alert(error.message));
-      clearInputs();
+    clearInputs();
   };
 
   const handleSignIn = () => {
@@ -50,7 +52,7 @@ const LoginScreen = () => {
   const clearInputs = () => {
     setEmail("");
     setPassword("");
-  }
+  };
 
   return (
     <View style={styles.container} behavior="padding">
