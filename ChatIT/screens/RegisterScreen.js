@@ -22,7 +22,7 @@ const RegisterScreen = () => {
 
   const navigation = useNavigation();
 
-  // IF YOU DECIDE THAT AFTER REGISTRATUION YOU WANT THE USER TO AUTOMATICALLY LOG IN 
+  // IF YOU DECIDE THAT AFTER REGISTRATUION YOU WANT THE USER TO AUTOMATICALLY LOG IN
   // THEN UNCOMMENT THIS CODE AND DELETE LINE WITH goBackToLogin FROM handleSignUp
   //
   // useEffect(() => {
@@ -46,6 +46,7 @@ const RegisterScreen = () => {
               uid: credentials.user.uid,
               name: name,
               surname: surname,
+              allowProfanity: true,
             });
           })
           .catch((error) => alert(error.message));

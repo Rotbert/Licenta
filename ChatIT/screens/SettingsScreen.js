@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import {
   View,
   StyleSheet,
@@ -6,8 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
+  Switch,
 } from "react-native";
 import db, { auth } from "../firebase";
+
+export let censorProfanity = null;
 
 const SettingsScreen = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +18,10 @@ const SettingsScreen = () => {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
 
-  const [allowProfanity, setAllowProfanity] = useState("");
+  const [censorProfanity, setCensorProfanity] = useState(false);
+  const [profanityState, setProfanotyState] = useState(
+    "Profanity is censored!"
+  );
 
   const [contacts, setContacts] = useState("");
 
@@ -35,12 +41,19 @@ const SettingsScreen = () => {
   }, []);
 
   const handleSave = () => {
-    console.log("plm")
-  }
+    console.log("plm");
+  };
 
   const changeState = () => {
-    console.log("plm")
-  }
+    setCensorProfanity((previousState) => !previousState);
+
+    if (censorProfanity) {
+      setProfanotyState("Profanity is censored!");
+    } else {
+      setProfanotyState("Profanity is allowed!");
+    }
+    console.log(censorProfanity);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -77,13 +90,19 @@ const SettingsScreen = () => {
         ></TextInput>
       </View>
 
+      <View style={styles.toggleContainer}>
+        <Text style={styles.toggleText}>{profanityState}</Text>
+        <Switch
+          trackColor={{ false: "grey", true: "#0782F9" }}
+          thumbColor={censorProfanity ? "#cbd3d8" : "#cbd3d8"}
+          onValueChange={changeState}
+          value={!censorProfanity}
+        />
+      </View>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity onPress={changeState} style={styles.buttonOutline}>
-          <Text style={styles.buttonOutlineText}>Save</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -97,6 +116,20 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: "5%",
     alignItems: "center",
+  },
+  toggleContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 5,
+    width: "80%",
+    height: "8.5%",
+  },
+  toggleText: {
+    marginRight: "33%",
   },
   inputContainer: {
     width: "80%",
