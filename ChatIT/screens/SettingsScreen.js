@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -10,47 +10,57 @@ import {
 } from "react-native";
 import db, { auth } from "../firebase";
 
-export let censorProfanity = null;
-
 const SettingsScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
 
-  const [censorProfanity, setCensorProfanity] = useState(false);
-  const [profanityState, setProfanotyState] = useState(
-    "Profanity is censored!"
-  );
-
-  const [contacts, setContacts] = useState("");
+  const [censorProfanity, setCensorProfanity] = useState();
+  const [profanityState, setProfanityState] = useState("");
 
   useEffect(() => {
-    const unsubscribe = db.collection("users").onSnapshot((snapshot) =>
-      setContacts(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      )
-    );
-
-    return () => {
-      unsubscribe();
-    };
+    db.collection("users")
+      .doc(auth.currentUser.email)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setCurrentUser(snapshot.data());
+          resolveProfanity();
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
+  const resolveProfanity = () => {
+    setCensorProfanity(!currentUser.allowProfanity);
+    if (censorProfanity) {
+      setProfanityState("Profanity is censored!");
+    } else {
+      setProfanityState("Profanity is allowed!");
+    }
+  }
+
   const handleSave = () => {
-    console.log("plm");
+    db.collection("users").doc(auth.currentUser.email).update({
+      name: name,
+      surname: surname,
+      allowProfanity: censorProfanity,
+    });
   };
 
   const changeState = () => {
     setCensorProfanity((previousState) => !previousState);
 
     if (censorProfanity) {
-      setProfanotyState("Profanity is censored!");
+      setProfanityState("Profanity is censored!");
     } else {
-      setProfanotyState("Profanity is allowed!");
+      setProfanityState("Profanity is allowed!");
     }
     console.log(censorProfanity);
   };
@@ -64,19 +74,19 @@ const SettingsScreen = () => {
     >
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="Name"
+          placeholder={currentUser.name}
           value={name}
           onChangeText={(text) => setName(text)}
           style={styles.input}
         ></TextInput>
         <TextInput
-          placeholder="Surname"
+          placeholder={currentUser.surname}
           value={surname}
           onChangeText={(text) => setSurname(text)}
           style={styles.input}
         ></TextInput>
         <TextInput
-          placeholder="Email"
+          placeholder={auth.currentUser.email}
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
