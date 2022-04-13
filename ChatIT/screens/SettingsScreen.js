@@ -7,17 +7,21 @@ import {
   TouchableOpacity,
   Text,
   Switch,
+  Alert,
 } from "react-native";
 import db, { auth } from "../firebase";
+import prompt from "react-native-prompt-android";
 
 const SettingsScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [repeatedPassword, setRepeatedPassword] = useState("");
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [currentUser, setCurrentUser] = useState("");
 
-  const [censorProfanity, setCensorProfanity] = useState();
+  const [allowProfanity, setAllowProfanity] = useState();
   const [profanityState, setProfanityState] = useState("");
 
   useEffect(() => {
@@ -26,8 +30,20 @@ const SettingsScreen = () => {
       .get()
       .then((snapshot) => {
         if (snapshot.exists) {
-          setCurrentUser(snapshot.data());
-          resolveProfanity();
+          const currentUser = snapshot.data();
+
+          if (currentUser.allowProfanity) {
+            setProfanityState("Profanity is allowed!");
+          } else {
+            setProfanityState("Profanity is censored!");
+          }
+
+          // set everything for later usage
+          setCurrentUser(currentUser);
+          setAllowProfanity(currentUser.allowProfanity);
+          setName(currentUser.name);
+          setSurname(currentUser.surname);
+          setEmail(auth.currentUser.email);
         } else {
           console.log("No data available");
         }
@@ -37,32 +53,84 @@ const SettingsScreen = () => {
       });
   }, []);
 
-  const resolveProfanity = () => {
-    setCensorProfanity(!currentUser.allowProfanity);
-    if (censorProfanity) {
-      setProfanityState("Profanity is censored!");
-    } else {
-      setProfanityState("Profanity is allowed!");
-    }
-  }
-
   const handleSave = () => {
-    db.collection("users").doc(auth.currentUser.email).update({
-      name: name,
-      surname: surname,
-      allowProfanity: censorProfanity,
-    });
+    if (verifyEmptiness(name, surname)) {
+      db.collection("users").doc(auth.currentUser.email).update({
+        name: name,
+        surname: surname,
+        allowProfanity: allowProfanity,
+      });
+    } else {
+      Alert.alert("Error", "Name and/or surname cannot be empty!", [
+        {
+          text: "Ok",
+          style: "ok",
+        },
+      ]);
+    }
+
+    if (newPassword !== "") {
+      if (verifyPassword(repeatedPassword)) {
+        prompt(
+          "Sign in",
+          "Please sign in again in order to change your password",
+          [
+            {
+              text: "Sign in",
+              onPress: (text) => setPassword(text),
+            },
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel",
+            },
+          ],
+          {
+            type: "secure-text",
+            cancelable: false,
+            defaultValue: "test",
+            placeholder: "placeholder",
+          }
+        );
+
+        // .then(
+        //   auth
+        //     .signInWithEmailAndPassword(email, password)
+        //     .catch((error) => alert(error.message))
+        // )
+        // .then(auth.currentUser.updatePassword(newPassword));
+      } else {
+        Alert.alert(
+          "Error",
+          "Passwords must match and and be at least 6 characters long!",
+          [
+            {
+              text: "Ok",
+              style: "ok",
+            },
+          ]
+        );
+      }
+    }
   };
 
   const changeState = () => {
-    setCensorProfanity((previousState) => !previousState);
+    setAllowProfanity((previousState) => !previousState);
 
-    if (censorProfanity) {
-      setProfanityState("Profanity is censored!");
-    } else {
+    // i dont't know why but here the logic is reversed
+    if (!allowProfanity) {
       setProfanityState("Profanity is allowed!");
+    } else {
+      setProfanityState("Profanity is censored!");
     }
-    console.log(censorProfanity);
+  };
+
+  const verifyPassword = (repeatedPassword) => {
+    return repeatedPassword === newPassword && newPassword.length >= 6;
+  };
+
+  const verifyEmptiness = (name, surname) => {
+    return name !== "" && surname !== "";
   };
 
   return (
@@ -85,16 +153,23 @@ const SettingsScreen = () => {
           onChangeText={(text) => setSurname(text)}
           style={styles.input}
         ></TextInput>
-        <TextInput
+        {/* <TextInput
           placeholder={auth.currentUser.email}
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
+        ></TextInput> */}
+        <TextInput
+          placeholder="New Password"
+          value={newPassword}
+          onChangeText={(text) => setNewPassword(text)}
+          style={styles.input}
+          secureTextEntry
         ></TextInput>
         <TextInput
-          placeholder="Password"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
+          placeholder="Repeat Password"
+          value={repeatedPassword}
+          onChangeText={(text) => setRepeatedPassword(text)}
           style={styles.input}
           secureTextEntry
         ></TextInput>
@@ -104,9 +179,9 @@ const SettingsScreen = () => {
         <Text style={styles.toggleText}>{profanityState}</Text>
         <Switch
           trackColor={{ false: "grey", true: "#0782F9" }}
-          thumbColor={censorProfanity ? "#cbd3d8" : "#cbd3d8"}
+          thumbColor={allowProfanity ? "#cbd3d8" : "#cbd3d8"}
           onValueChange={changeState}
-          value={!censorProfanity}
+          value={!allowProfanity}
         />
       </View>
 

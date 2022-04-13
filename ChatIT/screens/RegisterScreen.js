@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -46,7 +46,7 @@ const RegisterScreen = () => {
               uid: credentials.user.uid,
               name: name,
               surname: surname,
-              allowProfanity: true,
+              allowProfanity: false,
             });
           })
           .catch((error) => alert(error.message));
