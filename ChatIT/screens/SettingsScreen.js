@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -11,6 +11,15 @@ import {
 } from "react-native";
 import db, { auth } from "../firebase";
 import prompt from "react-native-prompt-android";
+import { Transition, Transitioning } from "react-native-reanimated";
+
+const transition = (
+  <Transition.Together>
+    <Transition.In type="fade" durationMs={200} />
+    <Transition.Change />
+    <Transition.Out type="fade" durationMs={200} />
+  </Transition.Together>
+);
 
 const SettingsScreen = () => {
   const [email, setEmail] = useState("");
@@ -23,6 +32,9 @@ const SettingsScreen = () => {
 
   const [allowProfanity, setAllowProfanity] = useState();
   const [profanityState, setProfanityState] = useState("");
+
+  const ref = useRef();
+  const [isDropDownActive, setIsDropDownActive] = useState(false);
 
   useEffect(() => {
     db.collection("users")
@@ -71,34 +83,9 @@ const SettingsScreen = () => {
 
     if (newPassword !== "") {
       if (verifyPassword(repeatedPassword)) {
-        prompt(
-          "Sign in",
-          "Please sign in again in order to change your password",
-          [
-            {
-              text: "Sign in",
-              onPress: (text) => setPassword(text),
-            },
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-          ],
-          {
-            type: "secure-text",
-            cancelable: false,
-            defaultValue: "test",
-            placeholder: "placeholder",
-          }
-        );
-
-        // .then(
-        //   auth
-        //     .signInWithEmailAndPassword(email, password)
-        //     .catch((error) => alert(error.message))
-        // )
-        // .then(auth.currentUser.updatePassword(newPassword));
+        auth
+          .signInWithEmailAndPassword(email, password)
+          .then(auth.currentUser.updatePassword(newPassword));
       } else {
         Alert.alert(
           "Error",
@@ -159,20 +146,6 @@ const SettingsScreen = () => {
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
         ></TextInput> */}
-        <TextInput
-          placeholder="New Password"
-          value={newPassword}
-          onChangeText={(text) => setNewPassword(text)}
-          style={styles.input}
-          secureTextEntry
-        ></TextInput>
-        <TextInput
-          placeholder="Repeat Password"
-          value={repeatedPassword}
-          onChangeText={(text) => setRepeatedPassword(text)}
-          style={styles.input}
-          secureTextEntry
-        ></TextInput>
       </View>
 
       <View style={styles.toggleContainer}>
@@ -185,11 +158,56 @@ const SettingsScreen = () => {
         />
       </View>
 
-      <View style={styles.buttonContainer}>
+      <Transitioning.View
+        ref={ref}
+        transition={transition}
+        style={styles.bottomContainer}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            ref.current.animateNextTransition();
+            setIsDropDownActive((previousState) => !previousState);
+          }}
+          activeOpacity={0.5}
+        >
+          <View>
+            <Text style={styles.heading}>CHANGE PASSWORD</Text>
+            <View style={styles.subCategories}>
+              {isDropDownActive && (
+                <TextInput
+                  placeholder="Old Password"
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                  style={styles.input}
+                  secureTextEntry
+                ></TextInput>
+              )}
+              {isDropDownActive && (
+                <TextInput
+                  placeholder="New Password"
+                  value={newPassword}
+                  onChangeText={(text) => setNewPassword(text)}
+                  style={styles.input}
+                  secureTextEntry
+                ></TextInput>
+              )}
+              {isDropDownActive && (
+                <TextInput
+                  placeholder="Repeat Password"
+                  value={repeatedPassword}
+                  onChangeText={(text) => setRepeatedPassword(text)}
+                  style={styles.input}
+                  secureTextEntry
+                ></TextInput>
+              )}
+            </View>
+          </View>
+        </TouchableOpacity>
+
         <TouchableOpacity onPress={handleSave} style={styles.button}>
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
-      </View>
+      </Transitioning.View>
     </KeyboardAvoidingView>
   );
 };
@@ -198,7 +216,7 @@ export default SettingsScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     marginTop: "5%",
     alignItems: "center",
   },
@@ -207,11 +225,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "white",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: 1,
     borderRadius: 10,
     marginTop: 5,
     width: "80%",
-    height: "8.5%",
   },
   toggleText: {
     marginRight: "33%",
@@ -226,18 +243,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
   },
-  buttonContainer: {
-    width: "60%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 40,
-  },
   button: {
     backgroundColor: "#0782F9",
-    width: "100%",
+    marginTop: 40,
+    marginLeft: "20%",
+    marginRight: "20%",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center",
   },
   buttonOutline: {
     backgroundColor: "white",
@@ -250,9 +264,18 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
-  buttonOutlineText: {
+  bottomContainer: {
+    width: "80%",
+  },
+  heading: {
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 14,
+    borderRadius: 10,
+    marginTop: 5,
+    textAlign: "center",
     color: "#0782F9",
-    fontWeight: "700",
-    fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#0782F9",
   },
 });
