@@ -34,7 +34,8 @@ const SettingsScreen = () => {
   const [profanityState, setProfanityState] = useState("");
 
   const ref = useRef();
-  const [isDropDownActive, setIsDropDownActive] = useState(false);
+  const [changePasswordDropDown, setChangePasswordDropDown] = useState(false);
+  const [deleteDropDown, setDeleteDropDown] = useState(false);
 
   useEffect(() => {
     db.collection("users")
@@ -83,9 +84,16 @@ const SettingsScreen = () => {
 
     if (newPassword !== "") {
       if (verifyPassword(repeatedPassword)) {
-        auth
-          .signInWithEmailAndPassword(email, password)
-          .then(auth.currentUser.updatePassword(newPassword));
+        let errorMessage = "";
+        auth.signInWithEmailAndPassword(email, password).catch((error) => {
+          errorMessage = error.message;
+          console.log("testststst");
+          alert(errorMessage);
+        });
+        if (errorMessage === "") {
+          console.log("teststststasdadasda");
+          auth.currentUser.updatePassword(newPassword);
+        }
       } else {
         Alert.alert(
           "Error",
@@ -118,6 +126,19 @@ const SettingsScreen = () => {
 
   const verifyEmptiness = (name, surname) => {
     return name !== "" && surname !== "";
+  };
+
+  const deleteAccount = () => {
+    let errorMessage = "";
+    auth.signInWithEmailAndPassword(email, password).catch((error) => {
+      errorMessage = error.message;
+      alert(errorMessage);
+    });
+    if (errorMessage === "") {
+      auth.currentUser.delete().catch((error) => {
+        alert(error.message);
+      });
+    }
   };
 
   return (
@@ -163,17 +184,54 @@ const SettingsScreen = () => {
         transition={transition}
         style={styles.bottomContainer}
       >
+        <Transitioning.View ref={ref} transition={transition}>
+          <TouchableOpacity
+            onPress={() => {
+              ref.current.animateNextTransition();
+              setDeleteDropDown((previousState) => !previousState);
+              setPassword("");
+            }}
+            activeOpacity={0.5}
+          >
+            <View>
+              <Text style={styles.heading}>DELETE ACCOUNT</Text>
+              <View style={styles.subCategories}>
+                {deleteDropDown && (
+                  <TextInput
+                    placeholder="Enter your password"
+                    value={password}
+                    onChangeText={(text) => setPassword(text)}
+                    style={styles.input}
+                    secureTextEntry
+                  ></TextInput>
+                )}
+                {deleteDropDown && (
+                  <TouchableOpacity
+                    onPress={deleteAccount}
+                    style={styles.deleteButton}
+                  >
+                    <Text style={styles.buttonText}>Delete</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+          </TouchableOpacity>
+        </Transitioning.View>
+
         <TouchableOpacity
           onPress={() => {
             ref.current.animateNextTransition();
-            setIsDropDownActive((previousState) => !previousState);
+            setChangePasswordDropDown((previousState) => !previousState);
+            setPassword("");
+            setNewPassword("");
+            setRepeatedPassword("");
           }}
           activeOpacity={0.5}
         >
           <View>
             <Text style={styles.heading}>CHANGE PASSWORD</Text>
             <View style={styles.subCategories}>
-              {isDropDownActive && (
+              {changePasswordDropDown && (
                 <TextInput
                   placeholder="Old Password"
                   value={password}
@@ -182,7 +240,7 @@ const SettingsScreen = () => {
                   secureTextEntry
                 ></TextInput>
               )}
-              {isDropDownActive && (
+              {changePasswordDropDown && (
                 <TextInput
                   placeholder="New Password"
                   value={newPassword}
@@ -191,7 +249,7 @@ const SettingsScreen = () => {
                   secureTextEntry
                 ></TextInput>
               )}
-              {isDropDownActive && (
+              {changePasswordDropDown && (
                 <TextInput
                   placeholder="Repeat Password"
                   value={repeatedPassword}
@@ -246,6 +304,16 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#0782F9",
     marginTop: 40,
+    marginLeft: "20%",
+    marginRight: "20%",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deleteButton: {
+    backgroundColor: "#0782F9",
+    marginTop: 5,
     marginLeft: "20%",
     marginRight: "20%",
     padding: 15,
