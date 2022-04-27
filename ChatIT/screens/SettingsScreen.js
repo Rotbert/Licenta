@@ -86,7 +86,7 @@ const SettingsScreen = () => {
       if (verifyPassword(repeatedPassword)) {
         let errorMessage = "";
         auth.signInWithEmailAndPassword(email, password).catch((error) => {
-          errorMessage = error.message;
+          errorMessage = error.message.split(/[:.]+/)[1] + '!';
           console.log("testststst");
           alert(errorMessage);
         });
@@ -131,12 +131,12 @@ const SettingsScreen = () => {
   const deleteAccount = () => {
     let errorMessage = "";
     auth.signInWithEmailAndPassword(email, password).catch((error) => {
-      errorMessage = error.message;
+      errorMessage = error.message.split(/[:.]+/)[1] + '!';
       alert(errorMessage);
     });
     if (errorMessage === "") {
       auth.currentUser.delete().catch((error) => {
-        alert(error.message);
+        alert(error.message.split(/[:.]+/)[1] + '!');
       });
     }
   };

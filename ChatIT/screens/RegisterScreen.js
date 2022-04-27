@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import db, { auth } from "../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { sendEmailVerification, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/core";
 
 const RegisterScreen = () => {
@@ -42,14 +42,16 @@ const RegisterScreen = () => {
       if (verifyEmail(repeatedEmail) && verifyPassword(repeatedPassword)) {
         createUserWithEmailAndPassword(auth, email, password)
           .then((credentials) => {
-            return db.collection("users").doc(credentials.user.email).set({
+            db.collection("users").doc(credentials.user.email).set({
               uid: credentials.user.uid,
               name: name,
               surname: surname,
               allowProfanity: false,
+              verifiedUser: credentials.user.emailVerified,
             });
+            sendEmailVerification(credentials.user);
           })
-          .catch((error) => alert(error.message));
+          .catch((error) => alert(error.message.split(/[:.]+/)[1] + '!'));
         clearInputs();
         goBackToLogin();
       } else if (!verifyEmail(repeatedEmail)) {

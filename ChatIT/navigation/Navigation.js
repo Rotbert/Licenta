@@ -48,7 +48,7 @@ function RootNavigator() {
       .then(() => {
         navigation.navigate("Login");
       })
-      .catch((error) => alert(error.message));
+      .catch((error) => alert(error.message.split(/[:.]+/)[1] + '!'));
   };
 
   const handleBackToChatsButton = () => {

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { auth } from "../firebase";
 import {
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/core";
@@ -22,6 +23,7 @@ const LoginScreen = () => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         navigation.navigate("Root");
+        clearInputs();
       }
     });
 
@@ -36,14 +38,17 @@ const LoginScreen = () => {
 
   const handleSignIn = () => {
     signInWithEmailAndPassword(auth, email, password).catch((error) =>
-      alert(error.message)
+      alert(error.message.split(/[:.]+/)[1] + '!')
     );
-    clearInputs();
   };
 
   const clearInputs = () => {
     setEmail("");
     setPassword("");
+  };
+
+  const handleForgotPassword = () => {
+    sendPasswordResetEmail(auth, email).catch((error) => alert(error.message.split(/[:.]+/)[1] + '!'));
   };
 
   return (
@@ -64,15 +69,20 @@ const LoginScreen = () => {
         ></TextInput>
       </View>
 
-      <View style={styles.buttonContainer}>
+      <View style={styles.middleContainer}>
         <TouchableOpacity onPress={handleSignIn} style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
-          onPress={handleSignUp}
-          style={[styles.button, styles.buttonOutline]}
+          onPress={handleForgotPassword}
+          style={styles.buttonForgotPassword}
         >
-          <Text style={styles.buttonOutlineText}>Register</Text>
+          <Text style={styles.buttonOutlineText}>Forgot Password?</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleSignUp} style={styles.buttonRegister}>
+          <Text style={styles.buttonOutlineText}>Don't have an account?</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -98,11 +108,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
   },
-  buttonContainer: {
+  middleContainer: {
     width: "60%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 15,
+    position: "relative",
   },
   button: {
     backgroundColor: "#0782F9",
@@ -126,5 +137,12 @@ const styles = StyleSheet.create({
     color: "#0782F9",
     fontWeight: "700",
     fontSize: 16,
+  },
+  buttonForgotPassword: {
+    marginTop: 25,
+  },
+  buttonRegister: {
+    position: "relative",
+    top: 50,
   },
 });
