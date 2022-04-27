@@ -10,8 +10,8 @@ import {
   Alert,
 } from "react-native";
 import db, { auth } from "../firebase";
-import prompt from "react-native-prompt-android";
 import { Transition, Transitioning } from "react-native-reanimated";
+import { MaterialIcons, Octicons } from "@expo/vector-icons";
 
 const transition = (
   <Transition.Together>
@@ -29,6 +29,11 @@ const SettingsScreen = () => {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [currentUser, setCurrentUser] = useState("");
+
+  const verifiedUser = auth.currentUser.emailVerified;
+  const verifiedUserMessage = verifiedUser
+    ? "Verified user!"
+    : "Please verify your email!";
 
   const [allowProfanity, setAllowProfanity] = useState();
   const [profanityState, setProfanityState] = useState("");
@@ -86,7 +91,7 @@ const SettingsScreen = () => {
       if (verifyPassword(repeatedPassword)) {
         let errorMessage = "";
         auth.signInWithEmailAndPassword(email, password).catch((error) => {
-          errorMessage = error.message.split(/[:.]+/)[1] + '!';
+          errorMessage = error.message.split(/[:.]+/)[1] + "!";
           console.log("testststst");
           alert(errorMessage);
         });
@@ -131,12 +136,12 @@ const SettingsScreen = () => {
   const deleteAccount = () => {
     let errorMessage = "";
     auth.signInWithEmailAndPassword(email, password).catch((error) => {
-      errorMessage = error.message.split(/[:.]+/)[1] + '!';
+      errorMessage = error.message.split(/[:.]+/)[1] + "!";
       alert(errorMessage);
     });
     if (errorMessage === "") {
       auth.currentUser.delete().catch((error) => {
-        alert(error.message.split(/[:.]+/)[1] + '!');
+        alert(error.message.split(/[:.]+/)[1] + "!");
       });
     }
   };
@@ -148,6 +153,28 @@ const SettingsScreen = () => {
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       enabled={Platform.OS === "ios" ? true : false}
     >
+      <View
+        style={styles.topContainer}
+        backgroundColor={verifiedUser ? "green" : "red"}
+      >
+        <Text style={styles.topText}>{verifiedUserMessage}</Text>
+        {verifiedUser ? (
+          <MaterialIcons
+            name="verified-user"
+            size={24}
+            color="black"
+            style={styles.topIcon}
+          />
+        ) : (
+          <Octicons
+            name="unverified"
+            size={24}
+            color="black"
+            style={styles.topIcon}
+          />
+        )}
+      </View>
+
       <View style={styles.inputContainer}>
         <TextInput
           placeholder={currentUser.name}
@@ -278,6 +305,17 @@ const styles = StyleSheet.create({
     marginTop: "5%",
     alignItems: "center",
   },
+  topContainer: {
+    position: "relative",
+    alignItems: "center",
+    flexDirection: "row",
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    paddingVertical: 1,
+    borderRadius: 10,
+    marginTop: 5,
+    width: "80%",
+  },
   toggleContainer: {
     alignItems: "center",
     flexDirection: "row",
@@ -287,6 +325,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
     width: "80%",
+  },
+  topText: {
+    position: "relative",
+  },
+  topIcon: {
+    position: "relative",
+    left: 190,
   },
   toggleText: {
     marginRight: "33%",
