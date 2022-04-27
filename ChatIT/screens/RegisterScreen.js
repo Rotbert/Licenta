@@ -55,14 +55,14 @@ const RegisterScreen = () => {
         clearInputs();
         goBackToLogin();
       } else if (!verifyEmail(repeatedEmail)) {
-        Alert.alert("Error", "Emails must match!", [
+        Alert.alert("Alert", "Emails must match!", [
           {
             text: "Ok",
             style: "ok",
           },
         ]);
       } else if (!verifyPassword(repeatedPassword)) {
-        Alert.alert("Error", "Passwords must match!", [
+        Alert.alert("Alert", "Passwords must match!", [
           {
             text: "Ok",
             style: "ok",
@@ -70,7 +70,7 @@ const RegisterScreen = () => {
         ]);
       }
     } else {
-      Alert.alert("Error", "Please fill in all boxes!", [
+      Alert.alert("Alert", "Please fill in all boxes!", [
         {
           text: "Ok",
           style: "ok",

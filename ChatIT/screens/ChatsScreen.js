@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, StyleSheet } from "react-native";
+import { ScrollView, View, StyleSheet, Alert } from "react-native";
 import ChatListItem from "../components/ChatListItem";
 import NewMessageButton from "../components/NewMessageButton";
 import NoChatsAvailable from "../components/NoChatsAvailable";
@@ -8,6 +8,19 @@ import { auth } from "../firebase";
 
 const ChatsScreen = () => {
   const [chats, setChats] = useState([]);
+
+  if (!auth.currentUser.emailVerified) {
+    Alert.alert(
+      "Alert",
+      "Your email address is not yet verified! Please verify it as soon as you can.",
+      [
+        {
+          text: "Ok",
+          style: "ok",
+        },
+      ]
+    );
+  }
 
   useEffect(() => {
     const unsubscribe = db
