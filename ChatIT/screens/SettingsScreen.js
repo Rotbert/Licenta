@@ -163,14 +163,14 @@ const SettingsScreen = () => {
             name="verified-user"
             size={24}
             color="black"
-            style={styles.topIcon}
+            style={styles.topIconVerified}
           />
         ) : (
           <Octicons
             name="unverified"
             size={24}
             color="black"
-            style={styles.topIcon}
+            style={styles.topIconNotVerified}
           />
         )}
       </View>
@@ -329,7 +329,11 @@ const styles = StyleSheet.create({
   topText: {
     position: "relative",
   },
-  topIcon: {
+  topIconNotVerified: {
+    position: "relative",
+    left: 120,
+  },
+  topIconVerified: {
     position: "relative",
     left: 190,
   },
