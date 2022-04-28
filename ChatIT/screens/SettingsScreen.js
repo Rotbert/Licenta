@@ -12,6 +12,10 @@ import {
 import db, { auth } from "../firebase";
 import { Transition, Transitioning } from "react-native-reanimated";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 const transition = (
   <Transition.Together>
@@ -24,8 +28,6 @@ const transition = (
 const SettingsScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [repeatedPassword, setRepeatedPassword] = useState("");
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [currentUser, setCurrentUser] = useState("");
@@ -79,38 +81,12 @@ const SettingsScreen = () => {
         allowProfanity: allowProfanity,
       });
     } else {
-      Alert.alert("Error", "Name and/or surname cannot be empty!", [
+      Alert.alert("Alert", "Name and/or surname cannot be empty!", [
         {
           text: "Ok",
           style: "ok",
         },
       ]);
-    }
-
-    if (newPassword !== "") {
-      if (verifyPassword(repeatedPassword)) {
-        let errorMessage = "";
-        auth.signInWithEmailAndPassword(email, password).catch((error) => {
-          errorMessage = error.message.split(/[:.]+/)[1] + "!";
-          console.log("testststst");
-          alert(errorMessage);
-        });
-        if (errorMessage === "") {
-          console.log("teststststasdadasda");
-          auth.currentUser.updatePassword(newPassword);
-        }
-      } else {
-        Alert.alert(
-          "Error",
-          "Passwords must match and and be at least 6 characters long!",
-          [
-            {
-              text: "Ok",
-              style: "ok",
-            },
-          ]
-        );
-      }
     }
   };
 
@@ -134,16 +110,35 @@ const SettingsScreen = () => {
   };
 
   const deleteAccount = () => {
-    let errorMessage = "";
-    auth.signInWithEmailAndPassword(email, password).catch((error) => {
-      errorMessage = error.message.split(/[:.]+/)[1] + "!";
-      alert(errorMessage);
-    });
-    if (errorMessage === "") {
-      auth.currentUser.delete().catch((error) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(
+        auth.currentUser.delete().catch((error) => {
+          alert(error.message.split(/[:.]+/)[1] + "!");
+        })
+      )
+      .catch((error) => {
+        errorMessage = error.message.split(/[:.]+/)[1] + "!";
+        alert(errorMessage);
+      });
+  };
+
+  const handleChangePassword = () => {
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        Alert.alert(
+          "Alert",
+          "An password reset email has been sent to your address!",
+          [
+            {
+              text: "Ok",
+              style: "ok",
+            },
+          ]
+        );
+      })
+      .catch((error) => {
         alert(error.message.split(/[:.]+/)[1] + "!");
       });
-    }
   };
 
   return (
@@ -211,82 +206,40 @@ const SettingsScreen = () => {
         transition={transition}
         style={styles.bottomContainer}
       >
-        <Transitioning.View ref={ref} transition={transition}>
-          <TouchableOpacity
-            onPress={() => {
-              ref.current.animateNextTransition();
-              setDeleteDropDown((previousState) => !previousState);
-              setPassword("");
-            }}
-            activeOpacity={0.5}
-          >
-            <View>
-              <Text style={styles.heading}>DELETE ACCOUNT</Text>
-              <View style={styles.subCategories}>
-                {deleteDropDown && (
-                  <TextInput
-                    placeholder="Enter your password"
-                    value={password}
-                    onChangeText={(text) => setPassword(text)}
-                    style={styles.input}
-                    secureTextEntry
-                  ></TextInput>
-                )}
-                {deleteDropDown && (
-                  <TouchableOpacity
-                    onPress={deleteAccount}
-                    style={styles.deleteButton}
-                  >
-                    <Text style={styles.buttonText}>Delete</Text>
-                  </TouchableOpacity>
-                )}
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Transitioning.View>
-
         <TouchableOpacity
           onPress={() => {
             ref.current.animateNextTransition();
-            setChangePasswordDropDown((previousState) => !previousState);
+            setDeleteDropDown((previousState) => !previousState);
             setPassword("");
-            setNewPassword("");
-            setRepeatedPassword("");
           }}
           activeOpacity={0.5}
         >
           <View>
-            <Text style={styles.heading}>CHANGE PASSWORD</Text>
+            <Text style={styles.heading}>DELETE ACCOUNT</Text>
             <View style={styles.subCategories}>
-              {changePasswordDropDown && (
+              {deleteDropDown && (
                 <TextInput
-                  placeholder="Old Password"
+                  placeholder="Enter your password"
                   value={password}
                   onChangeText={(text) => setPassword(text)}
                   style={styles.input}
                   secureTextEntry
                 ></TextInput>
               )}
-              {changePasswordDropDown && (
-                <TextInput
-                  placeholder="New Password"
-                  value={newPassword}
-                  onChangeText={(text) => setNewPassword(text)}
-                  style={styles.input}
-                  secureTextEntry
-                ></TextInput>
-              )}
-              {changePasswordDropDown && (
-                <TextInput
-                  placeholder="Repeat Password"
-                  value={repeatedPassword}
-                  onChangeText={(text) => setRepeatedPassword(text)}
-                  style={styles.input}
-                  secureTextEntry
-                ></TextInput>
+              {deleteDropDown && (
+                <TouchableOpacity
+                  onPress={deleteAccount}
+                  style={styles.deleteButton}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
               )}
             </View>
           </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleChangePassword} activeOpacity={0.5}>
+          <Text style={styles.heading}>CHANGE PASSWORD</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleSave} style={styles.button}>
@@ -369,12 +322,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-  },
-  buttonOutline: {
-    backgroundColor: "white",
-    marginTop: 5,
-    borderColor: "#0782F9",
-    borderWidth: 2,
   },
   buttonText: {
     color: "white",
