@@ -31,6 +31,7 @@ const SettingsScreen = () => {
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [currentUser, setCurrentUser] = useState("");
+  const [users, setUsers] = useState("");
 
   const verifiedUser = auth.currentUser.emailVerified;
   const verifiedUserMessage = verifiedUser
@@ -41,7 +42,6 @@ const SettingsScreen = () => {
   const [profanityState, setProfanityState] = useState("");
 
   const ref = useRef();
-  const [changePasswordDropDown, setChangePasswordDropDown] = useState(false);
   const [deleteDropDown, setDeleteDropDown] = useState(false);
 
   useEffect(() => {
@@ -73,6 +73,21 @@ const SettingsScreen = () => {
       });
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = db.collection("users").onSnapshot((snapshot) =>
+      setUsers(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleSave = () => {
     if (verifyEmptiness(name, surname)) {
       db.collection("users").doc(auth.currentUser.email).update({
@@ -101,24 +116,39 @@ const SettingsScreen = () => {
     }
   };
 
-  const verifyPassword = (repeatedPassword) => {
-    return repeatedPassword === newPassword && newPassword.length >= 6;
-  };
-
   const verifyEmptiness = (name, surname) => {
     return name !== "" && surname !== "";
   };
 
   const deleteAccount = () => {
     signInWithEmailAndPassword(auth, email, password)
-      .then(
+      .then(() => {
         auth.currentUser.delete().catch((error) => {
           alert(error.message.split(/[:.]+/)[1] + "!");
-        })
-      )
+        });
+
+        users.map((user) => {
+          if (user.id !== email) {
+            db.collection("users")
+              .doc(user.id)
+              .collection("chats")
+              .doc(email)
+              .delete()
+              .catch((error) => {
+                alert(error.message.split(/[:.]+/)[1] + "!" + "chat delete");
+              });
+          }
+        });
+
+        db.collection("users")
+          .doc(email)
+          .delete()
+          .catch((error) => {
+            alert(error.message.split(/[:.]+/)[1] + "!" + "user delete");
+          });
+      })
       .catch((error) => {
-        errorMessage = error.message.split(/[:.]+/)[1] + "!";
-        alert(errorMessage);
+        alert(error.message.split(/[:.]+/)[1] + "!");
       });
   };
 
