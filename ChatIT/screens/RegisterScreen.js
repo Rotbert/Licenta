@@ -38,10 +38,11 @@ const RegisterScreen = () => {
               verifiedUser: credentials.user.emailVerified,
             });
             sendEmailVerification(credentials.user);
+            signInWithEmailAndPassword(auth, email, password)
+              .then(navigation.navigate("Root").then(clearInputs()))
+              .then((auth.currentUser.displayName = name + " " + surname));
           })
           .catch((error) => alert(error.message.split(/[:.]+/)[1] + "!"));
-        navigation.navigate("Root");
-        clearInputs();
       } else if (!verifyEmail(repeatedEmail)) {
         Alert.alert("Alert", "Emails must match!", [
           {
@@ -84,8 +85,12 @@ const RegisterScreen = () => {
   };
 
   const clearInputs = () => {
+    setName("");
+    setSurname("");
     setEmail("");
+    setRepeatedEmail("");
     setPassword("");
+    setRepeatedPassword("");
   };
 
   return (
