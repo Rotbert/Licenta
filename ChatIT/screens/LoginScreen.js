@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -19,16 +19,27 @@ const LoginScreen = () => {
 
   const navigation = useNavigation();
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigation.navigate("Root");
+        clearInputs();
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleSignUp = () => {
     navigation.navigate("Register");
   };
 
   const handleSignIn = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .catch((error) => alert(error.message.split(/[:.]+/)[1] + "!"))
-      .then(navigation.navigate("Root"));
-
-    clearInputs();
+    signInWithEmailAndPassword(auth, email, password).catch((error) =>
+      alert(error.message.split(/[:.]+/)[1] + "!")
+    );
   };
 
   const clearInputs = () => {
