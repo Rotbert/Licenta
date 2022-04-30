@@ -2,15 +2,31 @@ import React, { useEffect, useState } from "react";
 import { Text, View, TouchableWithoutFeedback, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { Ionicons } from "@expo/vector-icons";
-import db from "../firebase";
+import db, { auth } from "../firebase";
 import moment from "moment";
-import { auth } from "../firebase";
 import ChatFilter from "./ChatFilter";
 
 const ChatListItem = ({ id, email }) => {
   const [messages, setMessages] = useState([]);
+  const [allowProfanity, setAllowProfanity] = useState();
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    db.collection("users")
+      .doc(auth.currentUser.email)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setAllowProfanity(snapshot.data().allowProfanity);
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -49,7 +65,9 @@ const ChatListItem = ({ id, email }) => {
           <View style={styles.midContainer}>
             <Text style={styles.username}>{email}</Text>
             <Text style={styles.lastMessage}>
-              {ChatFilter(messages[0]?.message)}
+              {allowProfanity
+                ? messages[0]?.message
+                : ChatFilter(messages[0]?.message)}
             </Text>
           </View>
         </View>

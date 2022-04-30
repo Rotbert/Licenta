@@ -1,13 +1,31 @@
 import moment from "moment";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { auth } from "../firebase";
+import db, { auth } from "../firebase";
 import ChatFilter from "./ChatFilter";
 
 const ChatMessage = ({ message }) => {
+  const [allowProfanity, setAllowProfanity] = useState();
+
   const isMyMessage = () => {
     return message.email === auth.currentUser.email;
   };
+
+  useEffect(() => {
+    db.collection("users")
+      .doc(auth.currentUser.email)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setAllowProfanity(snapshot.data().allowProfanity);
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -22,7 +40,9 @@ const ChatMessage = ({ message }) => {
         ]}
       >
         {!isMyMessage() && <Text style={styles.name}>{message.email}</Text>}
-        <Text style={styles.message}>{ChatFilter(message.message)}</Text>
+        <Text style={styles.message}>
+          {allowProfanity ? message.message : ChatFilter(message.message)}
+        </Text>
         <Text style={styles.time}>
           {moment(message?.timestamp?.toDate()).fromNow()}
         </Text>
