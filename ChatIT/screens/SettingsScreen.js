@@ -16,6 +16,8 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { useNavigation } from "@react-navigation/core";
+
 
 const transition = (
   <Transition.Together>
@@ -26,6 +28,8 @@ const transition = (
 );
 
 const SettingsScreen = () => {
+  const navigation = useNavigation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -79,6 +83,7 @@ const SettingsScreen = () => {
         snapshot.docs.map((doc) => ({
           id: doc.id,
           data: doc.data(),
+          doc: doc,
         }))
       )
     );
@@ -87,23 +92,6 @@ const SettingsScreen = () => {
       unsubscribe();
     };
   }, []);
-
-  const handleSave = () => {
-    if (verifyEmptiness(name, surname)) {
-      db.collection("users").doc(auth.currentUser.email).update({
-        name: name,
-        surname: surname,
-        allowProfanity: allowProfanity,
-      });
-    } else {
-      Alert.alert("Alert", "Name and/or surname cannot be empty!", [
-        {
-          text: "Ok",
-          style: "ok",
-        },
-      ]);
-    }
-  };
 
   const changeState = () => {
     setAllowProfanity((previousState) => !previousState);
@@ -120,36 +108,70 @@ const SettingsScreen = () => {
     return name !== "" && surname !== "";
   };
 
-  const deleteAccount = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        auth.currentUser.delete().catch((error) => {
-          alert(error.message.split(/[:.]+/)[1] + "!");
-        });
-
-        users.map((user) => {
-          if (user.id !== email) {
-            db.collection("users")
-              .doc(user.id)
-              .collection("chats")
-              .doc(email)
+  const deleteChat = (userId, chatId) => {
+    db.collection("users/" + userId + "/chats/" + chatId + "/messages")
+      .get()
+      .then((snapshot) => {
+        if (!snapshot.empty) {
+          snapshot.docs.map((doc) => {
+            db.collection("users/" + userId + "/chats/" + chatId + "/messages")
+              .doc(doc.id)
               .delete()
               .catch((error) => {
-                alert(error.message.split(/[:.]+/)[1] + "!" + "chat delete");
+                alert(
+                  error.message.split(/[:.]+/)[1] +
+                    "!" +
+                    " Message not deleted!"
+                );
               });
-          }
-        });
-
-        db.collection("users")
-          .doc(email)
-          .delete()
-          .catch((error) => {
-            alert(error.message.split(/[:.]+/)[1] + "!" + "user delete");
           });
-      })
+        }
+      });
+
+    db.collection("users/" + userId + "/chats")
+      .doc(chatId)
+      .delete()
       .catch((error) => {
+        alert(error.message.split(/[:.]+/)[1] + "!" + " Chat not deleted!");
+      });
+  };
+
+  const deleteAllData = () => {
+    users.map((user) => {
+      if (user.id === email) {
+        deleteChat(email, user.id);
+      } else {
+        deleteChat(user.id, email);
+      }
+    });
+
+    db.collection("users")
+      .doc(email)
+      .delete()
+      .catch((error) => {
+        alert(error.message.split(/[:.]+/)[1] + "!" + " User not deleted");
+      });
+  };
+
+  const handleSignOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        navigation.navigate("Login");
+      })
+      .catch((error) => alert(error.message.split(/[:.]+/)[1] + "!"));
+  };
+
+  const handleDelete = () => {
+    signInWithEmailAndPassword(auth, email, password).then(() => {
+      deleteAllData();
+
+      auth.currentUser.delete().catch((error) => {
         alert(error.message.split(/[:.]+/)[1] + "!");
       });
+    });
+
+    handleSignOut();
   };
 
   const handleChangePassword = () => {
@@ -169,6 +191,23 @@ const SettingsScreen = () => {
       .catch((error) => {
         alert(error.message.split(/[:.]+/)[1] + "!");
       });
+  };
+
+  const handleSave = () => {
+    if (verifyEmptiness(name, surname)) {
+      db.collection("users").doc(auth.currentUser.email).update({
+        name: name,
+        surname: surname,
+        allowProfanity: allowProfanity,
+      });
+    } else {
+      Alert.alert("Alert", "Name and/or surname cannot be empty!", [
+        {
+          text: "Ok",
+          style: "ok",
+        },
+      ]);
+    }
   };
 
   return (
@@ -258,7 +297,7 @@ const SettingsScreen = () => {
               )}
               {deleteDropDown && (
                 <TouchableOpacity
-                  onPress={deleteAccount}
+                  onPress={handleDelete}
                   style={styles.deleteButton}
                 >
                   <Text style={styles.buttonText}>Delete</Text>
