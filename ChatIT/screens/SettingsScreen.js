@@ -18,7 +18,6 @@ import {
 } from "firebase/auth";
 import { useNavigation } from "@react-navigation/core";
 
-
 const transition = (
   <Transition.Together>
     <Transition.In type="fade" durationMs={200} />
@@ -200,6 +199,7 @@ const SettingsScreen = () => {
         surname: surname,
         allowProfanity: allowProfanity,
       });
+      auth.currentUser.displayName = name + " " + surname;
     } else {
       Alert.alert("Alert", "Name and/or surname cannot be empty!", [
         {
