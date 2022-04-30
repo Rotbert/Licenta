@@ -9,7 +9,10 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import db, { auth } from "../firebase";
-import { sendEmailVerification, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  sendEmailVerification,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { useNavigation } from "@react-navigation/core";
 
 const RegisterScreen = () => {
@@ -21,21 +24,6 @@ const RegisterScreen = () => {
   const [surname, setSurname] = useState("");
 
   const navigation = useNavigation();
-
-  // IF YOU DECIDE THAT AFTER REGISTRATUION YOU WANT THE USER TO AUTOMATICALLY LOG IN
-  // THEN UNCOMMENT THIS CODE AND DELETE LINE WITH goBackToLogin FROM handleSignUp
-  //
-  // useEffect(() => {
-  //   const unsubscribe = auth.onAuthStateChanged((user) => {
-  //     if (user) {
-  //       navigation.navigate("Root");
-  //     }
-  //   });
-
-  //   return () => {
-  //     unsubscribe();
-  //   };
-  // }, []);
 
   const handleSignUp = () => {
     if (verifyEmptiness(name, surname, email, password)) {
@@ -51,9 +39,9 @@ const RegisterScreen = () => {
             });
             sendEmailVerification(credentials.user);
           })
-          .catch((error) => alert(error.message.split(/[:.]+/)[1] + '!'));
+          .catch((error) => alert(error.message.split(/[:.]+/)[1] + "!"));
+        navigation.navigate("Root");
         clearInputs();
-        goBackToLogin();
       } else if (!verifyEmail(repeatedEmail)) {
         Alert.alert("Alert", "Emails must match!", [
           {
