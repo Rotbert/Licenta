@@ -35,7 +35,6 @@ const RegisterScreen = () => {
               name: name,
               surname: surname,
               allowProfanity: false,
-              verifiedUser: credentials.user.emailVerified,
             });
             sendEmailVerification(credentials.user);
             signInWithEmailAndPassword(auth, email, password)
