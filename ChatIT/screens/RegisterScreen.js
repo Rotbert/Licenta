@@ -30,16 +30,22 @@ const RegisterScreen = () => {
       if (verifyEmail(repeatedEmail) && verifyPassword(repeatedPassword)) {
         createUserWithEmailAndPassword(auth, email, password)
           .then((credentials) => {
-            db.collection("users").doc(credentials.user.email).set({
-              uid: credentials.user.uid,
-              name: name,
-              surname: surname,
-              allowProfanity: false,
-            });
+            db.collection("users")
+              .doc(credentials.user.email)
+              .set({
+                uid: credentials.user.uid,
+                name: name,
+                surname: surname,
+                displayName: name + " " + surname,
+                allowProfanity: false,
+              });
             sendEmailVerification(credentials.user);
-            signInWithEmailAndPassword(auth, email, password)
-              .then(navigation.navigate("Root").then(clearInputs()))
-              .then((auth.currentUser.displayName = name + " " + surname));
+            signInWithEmailAndPassword(auth, email, password).then(() => {
+              navigation.navigate("Root").then(clearInputs());
+            });
+            credentials.user.updateProfile({
+              displayName: name + " " + surname,
+            });
           })
           .catch((error) => alert(error.message.split(/[:.]+/)[1] + "!"));
       } else if (!verifyEmail(repeatedEmail)) {

@@ -197,9 +197,12 @@ const SettingsScreen = () => {
       db.collection("users").doc(auth.currentUser.email).update({
         name: name,
         surname: surname,
+        displayName: name + " " + surname,
         allowProfanity: allowProfanity,
       });
-      auth.currentUser.displayName = name + " " + surname;
+      auth.currentUser.updateProfile({
+        displayName: name + " " + surname,
+      });
     } else {
       Alert.alert("Alert", "Name and/or surname cannot be empty!", [
         {
