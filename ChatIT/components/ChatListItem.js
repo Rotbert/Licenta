@@ -13,8 +13,7 @@ const ChatListItem = ({ id, email }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection("users")
+    db.collection("users")
       .doc(auth.currentUser.email)
       .get()
       .then((snapshot) => {
@@ -27,10 +26,6 @@ const ChatListItem = ({ id, email }) => {
       .catch((error) => {
         console.error(error);
       });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
 
   useEffect(() => {
@@ -114,12 +109,13 @@ export default ChatListItem;
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    width: "100%",
+    width: "98%",
     justifyContent: "space-between",
     padding: 10,
     borderBottomColor: "#f9f9f9",
     borderBottomWidth: 0.5,
     marginTop: 5,
+    marginLeft: "1%",
   },
   newMessage: {
     borderWidth: 1,
