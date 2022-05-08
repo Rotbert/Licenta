@@ -37,9 +37,14 @@ const ChatListItem = ({ id, email }) => {
         .doc(id)
         .collection("messages")
         .orderBy("timestamp", "desc")
-        .onSnapshot((snapshot) => {
-          setMessages(snapshot.docs.map((doc) => doc.data()));
-        });
+        .onSnapshot((snapshot) =>
+          setMessages(
+            snapshot.docs.map((doc) => ({
+              id: doc.id,
+              data: doc.data(),
+            }))
+          )
+        );
 
       return () => {
         unsubscribe();
@@ -47,16 +52,33 @@ const ChatListItem = ({ id, email }) => {
     }
   }, [id]);
 
+  const isMyMessage = () => {
+    return messages[0]?.data.email === auth.currentUser.email;
+  };
+
   const onClick = () => {
     navigation.navigate("ChatRoom", {
       id: id,
       email: email,
     });
+
+    db.collection("users")
+      .doc(auth.currentUser.email)
+      .collection("chats")
+      .doc(id)
+      .collection("messages")
+      .doc(messages[0]?.id)
+      .update({
+        seen: true,
+      });
   };
 
   return (
     <TouchableWithoutFeedback onPress={onClick}>
-      <View style={styles.container}>
+      <View
+        style={styles.container}
+        borderWidth={messages[0]?.data.seen || isMyMessage() ? 0 : 1}
+      >
         <View style={styles.leftContainer}>
           <View style={styles.avatar}>
             <Ionicons name="person" size={42} color="gray" />
@@ -66,13 +88,13 @@ const ChatListItem = ({ id, email }) => {
             <Text style={styles.username}>{email}</Text>
             <Text style={styles.lastMessage}>
               {allowProfanity
-                ? messages[0]?.message
-                : ChatFilter(messages[0]?.message)}
+                ? messages[0]?.data.message
+                : ChatFilter(messages[0]?.data.message)}
             </Text>
           </View>
         </View>
         <Text style={styles.time}>
-          {moment(messages[0]?.timestamp?.toDate()).format("DD/MM/YYYY")}
+          {moment(messages[0]?.data.timestamp?.toDate()).format("DD/MM/YYYY")}
         </Text>
       </View>
     </TouchableWithoutFeedback>
@@ -89,12 +111,12 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomColor: "#f9f9f9",
     borderBottomWidth: 0.5,
+    marginTop: 5,
   },
   leftContainer: {
     flexDirection: "row",
   },
   midContainer: {
-    // justifyContent: "space-around",
     width: "60%",
     height: "40%",
   },

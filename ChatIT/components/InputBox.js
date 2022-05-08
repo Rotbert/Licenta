@@ -69,6 +69,7 @@ const InputBox = ({ chatId }) => {
         message: message,
         email: auth.currentUser.email,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        seen: false,
       });
 
     setMessage("");
