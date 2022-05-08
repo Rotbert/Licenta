@@ -47,6 +47,8 @@ const SettingsScreen = () => {
   const ref = useRef();
   const [deleteDropDown, setDeleteDropDown] = useState(false);
 
+  const [chatIds, setChatIds] = useState([]);
+
   useEffect(() => {
     const unsubscribe = db
       .collection("users")
@@ -91,6 +93,18 @@ const SettingsScreen = () => {
         }))
       )
     );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection("users")
+      .doc(auth.currentUser.email)
+      .collection("chats")
+      .onSnapshot((snapshot) => setChatIds(snapshot.docs.map((doc) => doc.id)));
 
     return () => {
       unsubscribe();
@@ -157,6 +171,18 @@ const SettingsScreen = () => {
       });
   };
 
+  const updateDisplayName = () => {
+    chatIds.map((chatId) => {
+      db.collection("users")
+        .doc(chatId)
+        .collection("chats")
+        .doc(email)
+        .update({
+          displayName: name + " " + surname,
+        });
+    });
+  };
+
   const handleSignOut = () => {
     auth
       .signOut()
@@ -199,6 +225,7 @@ const SettingsScreen = () => {
 
   const handleSave = () => {
     if (verifyEmptiness(name, surname)) {
+      updateDisplayName();
       db.collection("users")
         .doc(auth.currentUser.email)
         .update({

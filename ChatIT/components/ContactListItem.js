@@ -29,13 +29,13 @@ const ContactiListItem = ({ email, displayName }) => {
             db.collection("users")
               .doc(auth.currentUser.email)
               .collection("chats")
-              .doc(`${email}`)
+              .doc(email)
               .update({
                 displayName: displayName,
                 creationDate: new Date(),
               });
             db.collection("users")
-              .doc(`${email}`)
+              .doc(email)
               .collection("chats")
               .doc(auth.currentUser.email)
               .update({
