@@ -81,8 +81,11 @@ const ChatListItem = ({ id, email }) => {
   return (
     <TouchableWithoutFeedback onPress={onClick}>
       <View
-        style={styles.container}
-        borderWidth={messages[0]?.data.seen || isMyMessage() ? 0 : 1}
+        style={
+          messages[0]?.data.seen || isMyMessage()
+            ? styles.container
+            : [styles.container, styles.newMessage]
+        }
       >
         <View style={styles.leftContainer}>
           <View style={styles.avatar}>
@@ -117,6 +120,13 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f9f9f9",
     borderBottomWidth: 0.5,
     marginTop: 5,
+  },
+  newMessage: {
+    borderWidth: 1,
+    borderColor: "#0782F9",
+    borderBottomColor: "#0782F9",
+    borderBottomWidth: 1,
+    borderRadius: 15,
   },
   leftContainer: {
     flexDirection: "row",
