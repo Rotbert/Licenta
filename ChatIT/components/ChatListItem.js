@@ -13,7 +13,8 @@ const ChatListItem = ({ id, email }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    db.collection("users")
+    const unsubscribe = db
+      .collection("users")
       .doc(auth.currentUser.email)
       .get()
       .then((snapshot) => {
@@ -26,6 +27,10 @@ const ChatListItem = ({ id, email }) => {
       .catch((error) => {
         console.error(error);
       });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {

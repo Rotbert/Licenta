@@ -48,7 +48,8 @@ const SettingsScreen = () => {
   const [deleteDropDown, setDeleteDropDown] = useState(false);
 
   useEffect(() => {
-    db.collection("users")
+    const unsubscribe = db
+      .collection("users")
       .doc(auth.currentUser.email)
       .get()
       .then((snapshot) => {
@@ -74,6 +75,10 @@ const SettingsScreen = () => {
       .catch((error) => {
         console.error(error);
       });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -194,12 +199,14 @@ const SettingsScreen = () => {
 
   const handleSave = () => {
     if (verifyEmptiness(name, surname)) {
-      db.collection("users").doc(auth.currentUser.email).update({
-        name: name,
-        surname: surname,
-        displayName: name + " " + surname,
-        allowProfanity: allowProfanity,
-      });
+      db.collection("users")
+        .doc(auth.currentUser.email)
+        .update({
+          name: name,
+          surname: surname,
+          displayName: name + " " + surname,
+          allowProfanity: allowProfanity,
+        });
       auth.currentUser.updateProfile({
         displayName: name + " " + surname,
       });

@@ -12,7 +12,8 @@ const ChatMessage = ({ message }) => {
   };
 
   useEffect(() => {
-    db.collection("users")
+    const unsubscribe = db
+      .collection("users")
       .doc(auth.currentUser.email)
       .get()
       .then((snapshot) => {
@@ -25,6 +26,10 @@ const ChatMessage = ({ message }) => {
       .catch((error) => {
         console.error(error);
       });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (
