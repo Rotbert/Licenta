@@ -8,7 +8,7 @@ const ContactsScreen = () => {
 
   useEffect(() => {
     const unsubscribe = db.collection("users").onSnapshot((snapshot) =>
-        setContacts(
+      setContacts(
         snapshot.docs
           .filter((doc) => {
             if (doc.id !== auth.currentUser.email) {
@@ -18,7 +18,7 @@ const ContactsScreen = () => {
           })
           .map((doc) => ({
             id: doc.id,
-            data: doc.data(),
+            displayName: doc.data().displayName,
           }))
       )
     );
@@ -33,8 +33,8 @@ const ContactsScreen = () => {
       {contacts.map((contact) => (
         <ContactiListItem
           key={contact.id}
-          id={contact.id}
           email={contact.id}
+          displayName={contact.displayName}
         />
       ))}
     </ScrollView>

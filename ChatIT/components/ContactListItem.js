@@ -11,39 +11,45 @@ import { Ionicons } from "@expo/vector-icons";
 import db from "../firebase";
 import { auth } from "../firebase";
 
-const ContactiListItem = ({ id, email }) => {
+const ContactiListItem = ({ email, displayName }) => {
   const navigation = useNavigation();
 
   const onClick = () => {
-    Alert.alert("New Chat", `Do you want to start a new chat with ${email}?`, [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "OK",
-        onPress: () => {
-          db.collection("users")
-            .doc(auth.currentUser.email)
-            .collection("chats")
-            .doc(`${email}`)
-            .set({
-              creationDate: new Date(),
-            });
-          db.collection("users")
-            .doc(`${email}`)
-            .collection("chats")
-            .doc(auth.currentUser.email)
-            .set({
-              creationDate: new Date(),
-            });
-          navigation.navigate("ChatRoom", {
-            id: email,
-            email: email,
-          });
+    Alert.alert(
+      "New Chat",
+      `Do you want to start a new chat with ${displayName}?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
         },
-      },
-    ]);
+        {
+          text: "OK",
+          onPress: () => {
+            db.collection("users")
+              .doc(auth.currentUser.email)
+              .collection("chats")
+              .doc(`${email}`)
+              .update({
+                displayName: displayName,
+                creationDate: new Date(),
+              });
+            db.collection("users")
+              .doc(`${email}`)
+              .collection("chats")
+              .doc(auth.currentUser.email)
+              .update({
+                displayName: auth.currentUser.displayName,
+                creationDate: new Date(),
+              });
+            navigation.navigate("ChatRoom", {
+              email: email,
+              displayName: displayName,
+            });
+          },
+        },
+      ]
+    );
   };
 
   return (

@@ -32,7 +32,7 @@ const ChatsScreen = () => {
         setChats(
           snapshot.docs.map((doc) => ({
             id: doc.id,
-            data: doc.data(),
+            displayName: doc.data().displayName,
           }))
         )
       );
@@ -54,7 +54,11 @@ const ChatsScreen = () => {
           <NoChatsAvailable />
         ) : (
           chats.map((chat) => (
-            <ChatListItem key={chat.id} id={chat.id} email={chat.id} />
+            <ChatListItem
+              key={chat.id}
+              email={chat.id}
+              displayName={chat.displayName}
+            />
           ))
         )}
       </ScrollView>

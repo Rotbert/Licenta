@@ -15,7 +15,8 @@ const ChatRoomScreen = () => {
 
   const [messages, setMessages] = useState([]);
   const route = useRoute();
-  const chatId = route.params?.id;
+  const chatId = route.params?.email;
+  const displayName = route.params?.displayName;
 
   useEffect(() => {
     if (chatId) {
@@ -48,7 +49,11 @@ const ChatRoomScreen = () => {
         }
       >
         {messages.map((message) => (
-          <ChatMessage key={Math.random()} message={message} />
+          <ChatMessage
+            key={Math.random()}
+            message={message}
+            displayName={displayName}
+          />
         ))}
       </ScrollView>
       <InputBox chatId={chatId} />

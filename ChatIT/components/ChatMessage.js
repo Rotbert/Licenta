@@ -4,7 +4,7 @@ import { Text, View, StyleSheet } from "react-native";
 import db, { auth } from "../firebase";
 import ChatFilter from "./ChatFilter";
 
-const ChatMessage = ({ message }) => {
+const ChatMessage = ({ message, displayName }) => {
   const [allowProfanity, setAllowProfanity] = useState();
 
   const isMyMessage = () => {
@@ -12,8 +12,7 @@ const ChatMessage = ({ message }) => {
   };
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection("users")
+    db.collection("users")
       .doc(auth.currentUser.email)
       .get()
       .then((snapshot) => {
@@ -26,10 +25,6 @@ const ChatMessage = ({ message }) => {
       .catch((error) => {
         console.error(error);
       });
-
-    return () => {
-      unsubscribe();
-    };
   }, []);
 
   return (
@@ -44,7 +39,7 @@ const ChatMessage = ({ message }) => {
           },
         ]}
       >
-        {!isMyMessage() && <Text style={styles.name}>{message.email}</Text>}
+        {!isMyMessage() && <Text style={styles.name}>{displayName}</Text>}
         <Text style={styles.message}>
           {allowProfanity ? message.message : ChatFilter(message.message)}
         </Text>

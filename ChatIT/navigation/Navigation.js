@@ -48,7 +48,7 @@ function RootNavigator() {
       .then(() => {
         navigation.navigate("Login");
       })
-      .catch((error) => alert(error.message.split(/[:.]+/)[1] + '!'));
+      .catch((error) => alert(error.message.split(/[:.]+/)[1] + "!"));
   };
 
   const handleBackToChatsButton = () => {
@@ -57,7 +57,7 @@ function RootNavigator() {
 
   const handleSettings = () => {
     navigation.navigate("Settings");
-  }
+  };
 
   return (
     <Stack.Navigator
@@ -83,10 +83,7 @@ function RootNavigator() {
         component={RegisterScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-      />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
       <Stack.Screen
         name="Root"
         component={MainTabNavigator}
@@ -126,7 +123,7 @@ function RootNavigator() {
         name="ChatRoom"
         component={ChatRoomScreen}
         options={({ route }) => ({
-          title: route.params.email,
+          title: route.params.displayName,
           params: route.params,
           headerRight: () => (
             <View

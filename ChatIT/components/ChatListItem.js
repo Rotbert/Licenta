@@ -6,7 +6,7 @@ import db, { auth } from "../firebase";
 import moment from "moment";
 import ChatFilter from "./ChatFilter";
 
-const ChatListItem = ({ id, email }) => {
+const ChatListItem = ({ email, displayName }) => {
   const [messages, setMessages] = useState([]);
   const [allowProfanity, setAllowProfanity] = useState();
 
@@ -29,12 +29,12 @@ const ChatListItem = ({ id, email }) => {
   }, []);
 
   useEffect(() => {
-    if (id) {
+    if (email) {
       const unsubscribe = db
         .collection("users")
         .doc(auth.currentUser.email)
         .collection("chats")
-        .doc(id)
+        .doc(email)
         .collection("messages")
         .orderBy("timestamp", "desc")
         .onSnapshot((snapshot) =>
@@ -50,7 +50,7 @@ const ChatListItem = ({ id, email }) => {
         unsubscribe();
       };
     }
-  }, [id]);
+  }, [email]);
 
   const isMyMessage = () => {
     return messages[0]?.data.email === auth.currentUser.email;
@@ -58,14 +58,14 @@ const ChatListItem = ({ id, email }) => {
 
   const onClick = () => {
     navigation.navigate("ChatRoom", {
-      id: id,
       email: email,
+      displayName: displayName,
     });
 
     db.collection("users")
       .doc(auth.currentUser.email)
       .collection("chats")
-      .doc(id)
+      .doc(email)
       .collection("messages")
       .doc(messages[0]?.id)
       .update({
@@ -88,7 +88,7 @@ const ChatListItem = ({ id, email }) => {
           </View>
 
           <View style={styles.midContainer}>
-            <Text style={styles.username}>{email}</Text>
+            <Text style={styles.username}>{displayName}</Text>
             <Text style={styles.lastMessage}>
               {allowProfanity
                 ? messages[0]?.data.message
