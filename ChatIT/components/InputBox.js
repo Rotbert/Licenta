@@ -71,6 +71,20 @@ const InputBox = ({ chatId }) => {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         seen: false,
       });
+    db.collection("users")
+      .doc(auth.currentUser.email)
+      .collection("chats")
+      .doc(chatId)
+      .update({
+        lastMessageTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+    db.collection("users")
+      .doc(chatId)
+      .collection("chats")
+      .doc(auth.currentUser.email)
+      .update({
+        lastMessageTimestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
 
     setMessage("");
   };

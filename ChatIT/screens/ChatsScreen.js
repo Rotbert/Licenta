@@ -27,6 +27,7 @@ const ChatsScreen = () => {
       .collection("users")
       .doc(auth.currentUser.email)
       .collection("chats")
+      .orderBy("lastMessageTimestamp", "desc")
       .onSnapshot((snapshot) =>
         setChats(
           snapshot.docs.map((doc) => ({
