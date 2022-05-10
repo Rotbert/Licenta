@@ -5,7 +5,7 @@ import Navigation from "./navigation/Navigation";
 import { LogBox } from "react-native";
 
 export default function App() {
-  LogBox.ignoreLogs(["Setting a timer for a long"]);
+  LogBox.ignoreLogs(["Setting a timer for a long", "AsyncStorage has been extracted"]);
 
   return (
     <SafeAreaProvider>
