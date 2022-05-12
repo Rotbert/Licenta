@@ -16,8 +16,10 @@ import {
 import db, { auth } from "../firebase";
 import firebase from "firebase/compat/app";
 import Filter from "bad-words";
+import { useNavigation } from "@react-navigation/core";
 
 const InputBox = ({ chatId }) => {
+  const navigation = useNavigation();
   const filter = new Filter();
 
   const [message, setMessage] = useState("");
@@ -89,12 +91,16 @@ const InputBox = ({ chatId }) => {
     setMessage("");
   };
 
-  const onPress = () => {
+  const handleSendMessage = () => {
     if (!message) {
       onMicrophonePress();
     } else {
       checkProfanity();
     }
+  };
+
+  const handleOpenCamera = () => {
+    navigation.navigate("Camera");
   };
 
   return (
@@ -110,10 +116,17 @@ const InputBox = ({ chatId }) => {
         />
         <Entypo name="attachment" size={24} color="grey" style={styles.icon} />
         {!message && (
-          <Fontisto name="camera" size={24} color="grey" style={styles.icon} />
+          <TouchableOpacity onPress={handleOpenCamera}>
+            <Fontisto
+              name="camera"
+              size={24}
+              color="grey"
+              style={styles.icon}
+            />
+          </TouchableOpacity>
         )}
       </View>
-      <TouchableOpacity onPress={onPress}>
+      <TouchableOpacity onPress={handleSendMessage}>
         <View style={styles.buttonContainer}>
           {!message ? (
             <MaterialCommunityIcons
