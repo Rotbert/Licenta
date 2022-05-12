@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
+  Platform,
   View,
   StyleSheet,
   KeyboardAvoidingView,
@@ -264,14 +265,14 @@ const SettingsScreen = () => {
             name="verified-user"
             size={24}
             color="black"
-            style={styles.topIconVerified}
+            style={styles.topIcon}
           />
         ) : (
           <Octicons
             name="unverified"
             size={24}
             color="black"
-            style={styles.topIconNotVerified}
+            style={styles.topIcon}
           />
         )}
       </View>
@@ -313,6 +314,7 @@ const SettingsScreen = () => {
             setPassword("");
           }}
           activeOpacity={0.5}
+          style={styles.dropDown}
         >
           <View>
             <Text style={styles.heading}>DELETE ACCOUNT</Text>
@@ -320,6 +322,7 @@ const SettingsScreen = () => {
               {deleteDropDown && (
                 <TextInput
                   placeholder="Enter your password"
+                  placeholderTextColor={"gray"}
                   value={password}
                   onChangeText={(text) => setPassword(text)}
                   style={styles.input}
@@ -338,7 +341,11 @@ const SettingsScreen = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleChangePassword} activeOpacity={0.5}>
+        <TouchableOpacity
+          onPress={handleChangePassword}
+          activeOpacity={0.5}
+          style={styles.dropDown}
+        >
           <Text style={styles.heading}>CHANGE PASSWORD</Text>
         </TouchableOpacity>
 
@@ -374,21 +381,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: "white",
     paddingHorizontal: 15,
-    paddingVertical: 1,
+    paddingVertical: Platform.OS === "ios" ? 10 : 1,
     borderRadius: 10,
     marginTop: 5,
     width: "80%",
   },
   topText: {
     position: "relative",
+    paddingVertical: 5,
   },
-  topIconNotVerified: {
-    position: "relative",
-    left: 120,
-  },
-  topIconVerified: {
-    position: "relative",
-    left: 190,
+  topIcon: {
+    position: "absolute",
+    right: "8%",
   },
   toggleText: {
     marginRight: "33%",
@@ -399,7 +403,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === "ios" ? 16 : 10,
     borderRadius: 10,
     marginTop: 5,
   },
@@ -441,5 +445,8 @@ const styles = StyleSheet.create({
     color: "#0782F9",
     borderWidth: 1,
     borderColor: "#0782F9",
+  },
+  dropDown: {
+    borderRadius: 10,
   },
 });

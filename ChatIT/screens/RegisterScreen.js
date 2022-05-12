@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Platform,
   View,
   Text,
   TextInput,
@@ -102,36 +103,44 @@ const RegisterScreen = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+      keyboardVerticalOffset={Platform.select({
+        ios: () => -100,
+        android: () => 20,
+      })()}
       enabled={Platform.OS === "ios" ? true : false}
     >
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Name"
+          placeholderTextColor={"gray"}
           value={name}
           onChangeText={(text) => setName(text)}
           style={styles.input}
         ></TextInput>
         <TextInput
           placeholder="Surname"
+          placeholderTextColor={"gray"}
           value={surname}
           onChangeText={(text) => setSurname(text)}
           style={styles.input}
         ></TextInput>
         <TextInput
           placeholder="Email"
+          placeholderTextColor={"gray"}
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
         ></TextInput>
         <TextInput
           placeholder="Repeat Email"
+          placeholderTextColor={"gray"}
           value={repeatedEmail}
           onChangeText={(text) => setRepeatedEmail(text)}
           style={styles.input}
         ></TextInput>
         <TextInput
           placeholder="Password"
+          placeholderTextColor={"gray"}
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
@@ -139,6 +148,7 @@ const RegisterScreen = () => {
         ></TextInput>
         <TextInput
           placeholder="Repeat Password"
+          placeholderTextColor={"gray"}
           value={repeatedPassword}
           onChangeText={(text) => setRepeatedPassword(text)}
           style={styles.input}
@@ -176,7 +186,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === "ios" ? 16 : 10,
     borderRadius: 10,
     marginTop: 5,
   },

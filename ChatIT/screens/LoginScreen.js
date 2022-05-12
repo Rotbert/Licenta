@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
+  Platform,
   View,
+  KeyboardAvoidingView,
   Text,
   TextInput,
   TouchableOpacity,
@@ -54,16 +56,26 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container} behavior="padding">
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior="padding"
+      keyboardVerticalOffset={Platform.select({
+        ios: () => -100,
+        android: () => 200,
+      })()}
+      enabled={Platform.OS === "ios" ? true : false}
+    >
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
+          placeholderTextColor={"gray"}
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
         ></TextInput>
         <TextInput
           placeholder="Password"
+          placeholderTextColor={"gray"}
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
@@ -87,7 +99,7 @@ const LoginScreen = () => {
           <Text style={styles.buttonOutlineText}>Don't have an account?</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -106,7 +118,7 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === "ios" ? 16 : 10,
     borderRadius: 10,
     marginTop: 5,
   },

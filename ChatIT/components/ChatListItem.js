@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TouchableWithoutFeedback, StyleSheet } from "react-native";
+import {
+  Platform,
+  Text,
+  View,
+  TouchableWithoutFeedback,
+  StyleSheet,
+} from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { Ionicons } from "@expo/vector-icons";
 import db, { auth } from "../firebase";
