@@ -1,10 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import { Feather, MaterialIcons } from "@expo/vector-icons";
 
 const CameraScreen = () => {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+
+  const cameraRef = useRef();
+
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      const options = { quality: 0.5, base64: true, skipProcessing: true };
+      let photo = await cameraRef.current.takePictureAsync(options);
+
+      const source = photo.uri;
+      cameraRef.current.pausePreview();
+      await handleSave(source);
+      cameraRef.current.resumePreview();
+    }
+  };
+
+  const handleSave = async (photo) => {
+    await MediaLibrary.createAssetAsync(photo);
+  };
 
   useEffect(() => {
     (async () => {
@@ -17,30 +43,36 @@ const CameraScreen = () => {
     return <View />;
   }
   if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+    return (
+      <View style={styles.noPermisionContainer}>
+        <Feather name="camera-off" size={154} color="gray" />
+        <Text style={styles.mainText}>No access to camera!</Text>
+        <Text style={styles.auxText}>
+          Camera access permision is turned off.
+        </Text>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.preview} type={type}>
-          <TouchableOpacity
-            style={[styles.button, styles.buttonOutline]}
-            onPress={() => {
-              setType(
-                type === Camera.Constants.Type.back
-                  ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back
-              );
-            }}
-          >
-            <Text style={styles.buttonOutlineText}> Flip </Text>
-          </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={captureHandle()}
-          style={[styles.button, styles.buttonOutline]}
+      <Camera style={styles.preview} type={type} ref={cameraRef}>
+        <TouchableOpacity
+          style={styles.flipButton}
+          onPress={() => {
+            setType(
+              type === Camera.Constants.Type.back
+                ? Camera.Constants.Type.front
+                : Camera.Constants.Type.back
+            );
+          }}
         >
-          <Text style={styles.buttonOutlineText}>Cancel</Text>
-        </TouchableOpacity> */}
+          <MaterialIcons name="flip-camera-ios" size={26} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={takePicture}
+          style={styles.takePictureButton}
+        ></TouchableOpacity>
       </Camera>
     </View>
   );
@@ -57,21 +89,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  button: {
+  flipButton: {
     backgroundColor: "#0782F9",
-    width: "100%",
-    padding: 15,
-    borderRadius: 10,
+    width: 45,
+    height: 45,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+  },
+  takePictureButton: {
+    backgroundColor: "#0782F9",
+    width: 55,
+    height: 55,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: Platform.OS === "ios" ? "12%" : "5%",
+  },
+  noPermisionContainer: {
+    flex: 1,
+    marginBottom: "20%",
+    justifyContent: "center",
     alignItems: "center",
   },
-  buttonOutline: {
-    backgroundColor: "white",
+  mainText: {
+    color: "black",
+    fontWeight: "700",
+    fontSize: 20,
     marginTop: 5,
-    borderColor: "#0782F9",
-    borderWidth: 2,
+    marginBottom: 10,
   },
-  buttonOutlineText: {
-    color: "#0782F9",
+  auxText: {
+    color: "gray",
     fontWeight: "700",
     fontSize: 16,
   },
