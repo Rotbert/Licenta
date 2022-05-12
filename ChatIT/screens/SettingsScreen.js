@@ -289,12 +289,6 @@ const SettingsScreen = () => {
           onChangeText={(text) => setSurname(text)}
           style={styles.input}
         ></TextInput>
-        {/* <TextInput
-          placeholder={auth.currentUser.email}
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          style={styles.input}
-        ></TextInput> */}
       </View>
 
       <View style={styles.toggleContainer}>
