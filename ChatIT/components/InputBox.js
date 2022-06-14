@@ -5,7 +5,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -23,13 +23,30 @@ const InputBox = ({ chatId }) => {
   const filter = new Filter();
 
   const [message, setMessage] = useState("");
+  const [allowProfanity, setAllowProfanity] = useState();
+
+  useEffect(() => {
+    db.collection("users")
+      .doc(auth.currentUser.email)
+      .get()
+      .then((snapshot) => {
+        if (snapshot.exists) {
+          setAllowProfanity(snapshot.data().allowProfanity);
+        } else {
+          console.log("No data available");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   const onMicrophonePress = () => {
     console.warn("Microphone");
   };
 
   const checkProfanity = () => {
-    if (filter.isProfane(message)) {
+    if (!allowProfanity && filter.isProfane(message)) {
       Alert.alert(
         "Profanity Alert!",
         "This message contains profanity. Are you sure you want to send it?",

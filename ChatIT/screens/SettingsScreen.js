@@ -193,7 +193,7 @@ const SettingsScreen = () => {
       .catch((error) => alert(error.message.split(/[:.]+/)[1] + "!"));
   };
 
-  const handleDelete = () => {
+  const handleDelete = () => { // IMBUNATATIRI AICI NEAPARAT
     signInWithEmailAndPassword(auth, email, password).then(() => {
       deleteAllData();
 

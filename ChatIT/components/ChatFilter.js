@@ -4,7 +4,7 @@ const ChatFilter = (chatMessage) => {
   if (chatMessage !== undefined) {
     const filter = new Filter();
 
-    filter.addWords("suck", "u suck", "you suck");
+    filter.addWords("suck", "u suck", "you suck", "pula", "pizda");
 
     return filter.clean(chatMessage);
   }
