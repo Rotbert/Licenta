@@ -17,6 +17,11 @@ import db, { auth } from "../firebase";
 import firebase from "firebase/compat/app";
 import Filter from "bad-words";
 import { useNavigation } from "@react-navigation/core";
+import axios from "axios";
+
+const axiosAPI = axios.create({
+  baseURL: "http://10.0.2.2:8082/whitelist",
+});
 
 const InputBox = ({ chatId }) => {
   const navigation = useNavigation();
@@ -59,6 +64,31 @@ const InputBox = ({ chatId }) => {
             text: "Yes",
             onPress: () => {
               sendMessage();
+              axiosAPI
+                .get("/get-number/" + auth.currentUser.email)
+                .then((response) => {
+                  if (response.data === "") {
+                    axiosAPI
+                      .post(
+                        "/save", {
+                          name: auth.currentUser.displayName,
+                          email: auth.currentUser.email,
+                          numberOfOffensiveMessages: "1",
+                        }
+                      )
+                  } else {
+                    axiosAPI
+                      .put(
+                        "/update", {
+                          email: auth.currentUser.email,
+                          numberOfOffensiveMessages: (parseInt(response.data) + 1).toString(),
+                        }
+                      )
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
             },
           },
         ]
