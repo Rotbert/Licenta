@@ -68,22 +68,18 @@ const InputBox = ({ chatId }) => {
                 .get("/get-number/" + auth.currentUser.email)
                 .then((response) => {
                   if (response.data === "") {
-                    axiosAPI
-                      .post(
-                        "/save", {
-                          name: auth.currentUser.displayName,
-                          email: auth.currentUser.email,
-                          numberOfOffensiveMessages: "1",
-                        }
-                      )
+                    axiosAPI.post("/save", {
+                      name: auth.currentUser.displayName,
+                      email: auth.currentUser.email,
+                      numberOfOffensiveMessages: "1",
+                    });
                   } else {
-                    axiosAPI
-                      .put(
-                        "/update", {
-                          email: auth.currentUser.email,
-                          numberOfOffensiveMessages: (parseInt(response.data) + 1).toString(),
-                        }
-                      )
+                    axiosAPI.put("/update", {
+                      email: auth.currentUser.email,
+                      numberOfOffensiveMessages: (
+                        parseInt(response.data) + 1
+                      ).toString(),
+                    });
                   }
                 })
                 .catch((error) => {
