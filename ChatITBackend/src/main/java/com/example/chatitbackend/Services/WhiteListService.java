@@ -28,7 +28,7 @@ public class WhiteListService {
         whiteList.setId(whiteListDTO.getId());
         whiteList.setName(whiteListDTO.getName());
         whiteList.setEmail(whiteListDTO.getEmail());
-        whiteList.setNumberOfOffensiveWords(whiteListDTO.getNumberOfOffensiveWords());
+        whiteList.setNumberOfOffensiveMessages(whiteListDTO.getNumberOfOffensiveMessages());
         whiteList.setCreationDate(whiteListDTO.getCreationDate());
 
         WhiteList savedWhiteList = whiteListRepository.save(whiteList);
@@ -38,7 +38,7 @@ public class WhiteListService {
         whiteListDTO1.setId(savedWhiteList.getId());
         whiteListDTO1.setName(savedWhiteList.getName());
         whiteListDTO1.setEmail(savedWhiteList.getEmail());
-        whiteListDTO1.setNumberOfOffensiveWords(savedWhiteList.getNumberOfOffensiveWords());
+        whiteListDTO1.setNumberOfOffensiveMessages(savedWhiteList.getNumberOfOffensiveMessages());
         whiteListDTO1.setCreationDate(savedWhiteList.getCreationDate());
 
         return whiteListDTO1;
@@ -54,7 +54,7 @@ public class WhiteListService {
             if(whiteList.getEmail().equals(email)){
                 oldWhiteList = whiteListRepository.findById(whiteList.getId()).get();
 
-                oldWhiteList.setNumberOfOffensiveWords(whiteListDTO.getNumberOfOffensiveWords());
+                oldWhiteList.setNumberOfOffensiveMessages(whiteListDTO.getNumberOfOffensiveMessages());
                 whiteListRepository.save(oldWhiteList);
                 break;
             }
@@ -69,7 +69,7 @@ public class WhiteListService {
 
         for (WhiteList whiteList : whiteListList) {
             if(whiteList.getEmail().equals(email)){
-                return whiteList.getNumberOfOffensiveWords();
+                return whiteList.getNumberOfOffensiveMessages();
             }
         }
         return "";

@@ -10,6 +10,6 @@ public class WhiteListDTO {
     private Integer id;
     private String name;
     private String email;
-    private String numberOfOffensiveWords;
+    private String numberOfOffensiveMessages;
     private Date creationDate;
 }

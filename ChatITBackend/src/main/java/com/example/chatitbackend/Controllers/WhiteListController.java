@@ -24,7 +24,7 @@ public class WhiteListController {
         return whiteListService.saveWhiteList(whiteListDTO);
     }
 
-    //@CrossOrigin
+    @CrossOrigin
     @GetMapping("/get-number/{email}")
     public String getNumberByEmail(@PathVariable String email) {
         return whiteListService.getNumberByEmail(email);

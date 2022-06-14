@@ -18,7 +18,7 @@ public class WhiteList {
 
     private String name;
     private String email;
-    private String numberOfOffensiveWords;
+    private String numberOfOffensiveMessages;
 
     @Column(updatable = false, nullable = false)
     @CreationTimestamp
