@@ -30,7 +30,7 @@ const ContactiListItem = ({ email, displayName }) => {
               .doc(auth.currentUser.email)
               .collection("chats")
               .doc(email)
-              .update({
+              .set({
                 displayName: displayName,
                 creationDate: new Date(),
               });
@@ -38,7 +38,7 @@ const ContactiListItem = ({ email, displayName }) => {
               .doc(email)
               .collection("chats")
               .doc(auth.currentUser.email)
-              .update({
+              .set({
                 displayName: auth.currentUser.displayName,
                 creationDate: new Date(),
               });

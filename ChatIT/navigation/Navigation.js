@@ -131,6 +131,7 @@ function RootNavigator() {
                 flexDirection: "row",
                 width: 100,
                 justifyContent: "space-between",
+                marginLeft: Platform.OS === "ios" ? 95 : 0,
               }}
             >
               <FontAwesome5 name="video" size={22} color={"white"} />
